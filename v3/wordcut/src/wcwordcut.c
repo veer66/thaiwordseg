@@ -447,14 +447,14 @@ wc_wordcut_result_str_tag(WcWordcutResult* self , char *out , size_t out_size   
 	      size_t pos_len=strlen(posstr);
 	      wc_dict_iter_pos_posid(pos,k,&id);
 	      posstr=wc_dict_iter_pos_posid2str(pos,id);
-	      if (l+pos_len+2>=out_size) return -1;
+	      if (l+pos_len+3>=out_size) return -1;
 	      *out++='<';
 	      for(pch=posstr;*pch!='\0';pch++)
 		{
 		  *out++ = *pch;
 		}	
 	      *out++='>';
-	      l=l+2+pos_len;
+	      l=l+3+pos_len;
 	    }
 	}
     }

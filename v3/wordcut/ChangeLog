@@ -1,5 +1,6 @@
 2003-03-05  Vee Satayamas <virasj@users.sourceforge.net>
 	* major bug fix in POS from wc_wordcut_result
+	* remove command line interface
 
 2003-01-24  Vee Satayamas <virasj@users.sourceforge.net>
 
