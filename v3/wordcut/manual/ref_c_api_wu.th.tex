@@ -11,6 +11,11 @@
       int *assoc_tab,*break_tab;
     } WcWordunitMap;
   \end{verbatim}
+\item{ค่าคงที่ของคลาส WcWordunitMap}
+  \index{ค่าคงที่!WcWordunitMap}
+  \begin{verbatim}
+    #define WC_DICT_MAP_NULL -1
+  \end{verbatim}
 \item{การสร้างวัตถุ WcWordUnitMap}
   \begin{verbatim}
     WcWordunitMap* wc_wordunit_map_new(const char* str,size_t len);
@@ -38,4 +43,80 @@
   \begin{verbatim}
     int wc_wordunit_map_assoc(WcWordunitMap *map,int stop);
   \end{verbatim}
+
+\item{ตัวอย่างการใช้ Wordunit}
+  \begin{itemize}
+    \item{ตัวอย่างการใช้หาสายอักขระที่สอดคล้องกับรูปแบบของคำ}
+      \index{ตัวอย่าง!การหาสายอักขระที่สอดคล้องกับรูปแบบของคำ}
+      \begin{verbatim}
+#include<wordcut/wcwordunit.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+int
+main ()
+{
+  /* การประกาศตัวแปร */
+  char *str = "โอเพ่นซอร์ส";
+  size_t str_len;
+  WcWordunitMap *wu_map;
+  int i;
+
+  str_len = strlen (str);
+  /* การค้นหาสายอักขระย่อยที่ต้องตามรูปแบบของคำ */
+  wu_map = wc_wordunit_find (str, str_len);
+  printf ("คำ = %s\n", str);
+  for (i = 0; i < str_len; i++)
+    {
+      int start;
+      /* อ่านค่าตำแหน่งเริ่มต้นของสายอักขระที่ต้องตามรูปแบบของคำ
+         ที่มีอักขระตัวสุดท้ายที่ตำแหน่งที่ i */
+      start = wc_wordunit_map_assoc (wu_map, i);
+      if (start != WC_WORDUNIT_NULL)
+        printf ("เริ่มต้น=%d\tสิ้นสุด=%d\n", start, i);
+    }
+  return 0;
+}
+      \end{verbatim}
+    \item{ตัวอย่างการใช้ตรวจสอบสายอักขระที่ขัดกับรูปแบบของคำ}
+      \index{ตัวอย่าง!การตรวจสอบสายอักขระที่ขัดกับรูปแบบของคำ}
+      \begin{verbatim}
+#include<wordcut/wcwordunit.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+int
+main ()
+{
+  /* การประกาศตัวแปร */
+  char *str = "โอเพ่นซอร์ส";
+  size_t str_len;
+  WcWordunitMap *wu_map;
+  wc_boolean is_break;
+  int start, stop;
+
+  str_len = strlen (str);
+  /* การค้นหาสายอักขระย่อยที่ต้องตามรูปแบบของคำ */
+  wu_map = wc_wordunit_find (str, str_len);
+
+  start = 0;
+  stop = 1;
+  /* ตรวจสอบว่าคู่อันดับ (จุดเริ่มต้น,จุดสิ้นสุด) ทำให้เกิดการขัดรูปแบบของคำหรือไม่ */
+  is_break = wc_wordunit_map_break (wu_map, start, stop);
+  printf ("เริ่มต้น=%d,สิ่นสุด=%d,ขัด=%s\n", start, stop,
+          is_break ? "ใช่" : "ไม่");
+
+  start = 0;
+  stop = 2;
+  /* ตรวจสอบว่าคู่อันดับ (จุดเริ่มต้น,จุดสิ้นสุด) ทำให้เกิดการขัดรูปแบบของคำหรือไม่ */
+  is_break = wc_wordunit_map_break (wu_map, start, stop);
+  printf ("เริ่มต้น=%d,สิ่นสุด=%d,ขัด=%s\n", start, stop,
+          is_break ? "ใช่" : "ไม่");
+
+  return 0;
+}
+      \end{verbatim}
+  \end{itemize}
 \end{itemize}

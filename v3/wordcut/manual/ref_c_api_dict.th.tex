@@ -318,6 +318,9 @@
 \begin{itemize}
 \item{โครงสร้างของคลาส WcDictMap}
   \index{โครงสร้าง!WcDictMap}
+  \index{WcDictMap}
+  \index{โครงสร้าง!WcDictMapTokPos}
+  \index{WcDictMapTokPos}
   \begin{verbatim}
     typedef struct wc_dict_map_tok_pos_t
     {
@@ -335,7 +338,100 @@
     } WcDictMap;
   \end{verbatim}
   \item{การสร้างวัตถุของคลาส WcDictMap}
+    \index{การสร้าง!WcDictMap}
     \begin{verbatim}
+      WcDictMap * wc_dict_map_new(WcDict *dict,const char *str,size_t len);
       void wc_dict_map_init(WcDictMap *self,WcDict *dict,const char *str,size_t len);
+      /* ฟังก์ชัน wc_dict_get_map ทำงานเหมือน wc_dict_map_new */
+      WcDictMap* wc_dict_get_map(WcDict *self,const char *str,size_t len);
     \end{verbatim}
+
+  \item{การทำลายวัตถุของคลาส WcDictMap}
+    \index{การทำลาย!WcDictMap}
+    \begin{verbatim}
+      void wc_dict_map_destroy(WcDictMap *self);
+      void wc_dict_map_delete(WcDictMap *self);
+    \end{verbatim}  
+
+  \item{การอ่านค่าของคลาส WcDictMap}
+    \index{การอ่านค่า!WcDictMap}
+    \begin{itemize}
+      \item{การอ่านค่าจำนวนคำที่มีอักขระตัวสุดท้ายที่ตำแหน่ง stop}
+	\begin{verbatim}
+	  int wc_dict_map_assoc_len(WcDictMap *self,int stop);
+	\end{verbatim}
+      \item{การอ่านค่าตำแหน่งของอักขระตัวแรกของคำที่ offset ที่มีอักขระตัวสุดท้ายที่ตำแหน่ง 
+	stop}
+	\begin{verbatim}
+	  /* ฟังก์ชันทำการคืนค่าตำแหน่งของอักขระตัวแรก */
+	  int wc_dict_map_assoc_at(WcDictMap *self,int stop,int offset);
+	\end{verbatim}
+      \item{การอ่านค่าวัตถุ WcDictIterPos ของคำที่ offset ที่มีอักขระตัวสุดท้ายที่ตำแหน่ง 
+	stop}
+	\begin{verbatim}
+	  const WcDictIterPos* wc_dict_map_assoc_pos_at(WcDictMap *self,int stop,int offset);
+	\end{verbatim}
+    \end{itemize}
+
+    \item{ตัวอย่างการใช้งานคลาส WcDictMap}
+      \begin{verbatim}
+#include<wordcut/wcdictmap.h>
+
+int
+main ()
+{
+  /* ประกาศตัวแปร */
+  char *str = "ปลาตากลม";
+  WcDict dict;
+  WcDictMap map;
+  const WcDictIterPos *pos;
+  int len = strlen (str), i, j, k, alen;
+
+  /* การสร้างวัตถุของคลาส WcDict */
+  wc_dict_init (&dict);
+  /* การตรวจสอบความเรียบร้อยในการสร้าง */
+  if (wc_dict_load (&dict, "../data/dict.etd") != WC_RET_NORMAL)
+    {
+      fprintf (stderr, "Cound not load dictionary.\n");
+      exit (1);
+    }
+
+  /* การสร้างวัตถุของ WcDictMap จากคู่ของวัตถุของ WcDict และสายอักขระ */
+  wc_dict_map_init (&map, &dict, str, len);
+  for (i = 0; i < len; i++)
+    {
+
+      alen = wc_dict_map_assoc_len (&map, i);
+      printf ("ตำแหน่งของอักษรตัวหลัง=%d,จำนวนของคำที่ลงท้ายที่ตำแหน่งนี้=%d",
+              i, alen);
+      for (j = 0; j < alen; j++)
+        {
+          int start;
+          /* การนำวัตถุ WcDictIterPos มาจาก WcDictMap */
+          pos = wc_dict_map_assoc_pos_at (&map, i, j);
+
+          /* การอ่านตำแหน่งเริ่มต้น */
+          start = wc_dict_map_assoc_at (&map, i, j);
+          for (k = 0; k < pos->len; k++)
+            {
+              wc_byte id;
+              const char *pos_str;
+              /* การใช้งาน WcDictIterPos */
+              wc_dict_iter_pos_posid (pos, k, &id);
+              pos_str = wc_dict_iter_pos_posid2str (pos, id);
+
+              printf (" <จุดเริ่มต้น=%d,รหัสเลข=%d,รหัสอักษร=%s> ", start, id,
+                      pos_str);
+            }
+        }
+      printf ("\n");
+    }
+  /* ทำลายวัตถุของคลาส WcDictMap */
+  wc_dict_map_destroy (&map);
+
+  /* ทำลายวัตถุของคลาส WcDict */
+  wc_dict_destroy (&dict);
+  return 0;
+}
+      \end{verbatim}
 \end{itemize}
