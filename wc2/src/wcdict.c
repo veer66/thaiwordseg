@@ -1,12 +1,6 @@
 #include<wordcut/wccommon.h>
 #include<stdio.h>
-
-
-typedef struct wc_dict_t {
-  char **pos;
-  wc_uint32 pos_size,root,size;
-  wc_uchar *tab;
-} WcDict;
+#include<wordcut/wcdict.h>
 
 
 static WC_STATUS
@@ -45,6 +39,7 @@ dump_node(WcDict *self,wc_uint32 p,int level)
   wc_byte child_count;
   wc_byte len;
   wc_uint32 child;
+ 
   int i;
  
   type=(self->tab[p] & 0xF0) >> 4;
@@ -69,6 +64,7 @@ dump_node(WcDict *self,wc_uint32 p,int level)
   printf ("\n");
   p++;
   pos_len=self->tab[p];
+
   p++;
   printf ("Pos len=%d --> ",pos_len);
   for(i=0;i<pos_len;i++)
@@ -155,11 +151,19 @@ dump_wordlist(WcDict *self,char *buffer,wc_uint32 p,int level)
     {
       /* print word */
       buffer[level] = '\0';
-      printf ("%s\n",buffer);
+      printf ("%s",buffer);
     }
   p++;
   pos_len=self->tab[p];
   p++;
+  if (terminate)
+    {
+      for(i=0;i<pos_len;i++)
+	{
+	  printf ("\t%s",self->pos[self->tab[p+i]]);
+	}
+      printf ("\n");
+    }
   p=p+pos_len;
   switch (type)
     {
@@ -273,6 +277,14 @@ test_dump_wordlist(const char dictfile[])
   wc_dict_delete(dict);
 }
 
+void
+wc_dict_root(WcDict *self,WcDictIter* iter)
+{
+  iter->p=self->root;
+  iter->dict=self;
+  iter->status=WC_DICT_ITER_ACTIVE;
+}
+
 int 
 main (int argc,char** argv) 
 {
@@ -280,4 +292,3 @@ main (int argc,char** argv)
    test_dump_wordlist(argv[1]); 
   return 0;
 }
-
