@@ -76,7 +76,7 @@ STRIP = @STRIP@
 VERSION = @VERSION@
 
 wordcutincludedir = $(includedir)/wordcut
-wordcutinclude_HEADERS = wccommon.h
+wordcutinclude_HEADERS = wccommon.h wcdict.h
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES =  path.h
 HEADERS =  $(wordcutinclude_HEADERS)
