@@ -250,7 +250,50 @@ void wc_dict_root(WcDict *self,WcDictIter* iter);
 \begin{verbatim}
 WC_STATUS wc_dict_iter_transit(WcDictIter *self,char ch);
 \end{verbatim}
+\item{ตัวอย่างการใช้งานวัตถุ WcDictIter}
+\begin{verbatim}
+อมqmanmls
+
+
+\end{verbatim}
 \end{itemize}
+
+
+
+
+
+
+
+\subsection{คลาส WcDictIterPos}
+\index{WcDictIterPos}
+\index{คลาส!WcDictIterPos}
+\begin{itemize}
+\item{โครงสร้างของคลาส WcDictIterPos}
+\index{โครงสร้าง!WcDictIterPos}
+\begin{verbatim}
+typedef struct wc_dict_iter_pos 
+{
+  wc_uint32 p;
+  wc_byte len;
+  WcDict *dict;
+} WcDictIterPos;
+\end{verbatim}
+\item{การนำวัตถุ WcDictIterPos มากจากวัตถุ WcDictIter}
+\index{การสร้าง!WcDictIterPos}
+\begin{verbatim}
+void wc_dict_iter_pos(WcDictIter *self,WcDictIterPos *pos);
+\end{verbatim}
+
+\item{การถอดข้อมูลของวัตถุ WcDictIterPos}
+\begin{verbatim}
+const char* wc_dict_iter_pos_posid2str(WcDictIterPos* self,wc_byte pos_id);
+WC_STATUS wc_dict_iter_pos_posid(WcDictIterPos *self,int index,wc_byte *id);
+\end{verbatim}
+\end{itemize}
+
+
+\renewcommand{\MakeUppercase}[1]{#1}
 \printindex
 }
+
 \end{document}
