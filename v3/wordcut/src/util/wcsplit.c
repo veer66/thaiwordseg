@@ -38,11 +38,13 @@ wc_split(const char *source,
 	  buffer[p]='\0';
 	  if (len==dot_count) 
 	    {
-	      default_callback(buffer,len,default_support_data);
+              if(default_callback!=NULL)
+		default_callback(buffer,len,default_support_data);
 	    }
 	  else
 	    {
-	      thai_callback(buffer,len,thai_support_data);
+              if(thai_callback!=NULL)
+	        thai_callback(buffer,len,thai_support_data);
 	    }
 	  free(buffer);
 	}
@@ -64,7 +66,9 @@ wc_split(const char *source,
 	  
 	  for(p=0,k=i,p=0;k<j;k++,p++) buffer[p]=source[k];
 	  buffer[p]='\0';
-	  default_callback(buffer,len,default_support_data);
+	  
+          if(default_callback!=NULL)
+	    default_callback(buffer,len,default_support_data);
 	  free(buffer);
 	}
       i=j;

@@ -1,4 +1,4 @@
-CFLAGS= -Wall -g $(GLIB2_CFLAGS)
+AM_CFLAGS= -Wall -g $(GLIB2_CFLAGS)
 INCLUDES= -I$(top_srcdir)/include
 bin_PROGRAMS=wcencoder
 wcencoder_SOURCES=wcencoder.c dictionary.c strcoder.c \

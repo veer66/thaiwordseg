@@ -1,5 +1,5 @@
 TESTS=test_pos test_wordunit test_dictmap test_wordcut
-CFLAGS = -I$(top_builddir)/include `pkg-config glib-2.0 --cflags`
+AM_CFLAGS = -I$(top_builddir)/include `pkg-config glib-2.0 --cflags`
 check_PROGRAMS=test_pos test_wordunit test_dictmap test_wordcut
 test_pos_SOURCES=test_pos.c
 test_pos_LDFLAG=`pkg-config glib-2.0 --libs`
