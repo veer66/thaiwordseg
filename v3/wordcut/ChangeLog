@@ -1,4 +1,7 @@
-2003-03-05  Vee Satayamas <virasj@users.sourceforge.net>
+2003-03-07 Vee Satayamas <virasj@users.sourceforge.net>
+	* fix wordunit breaking bug 
+	
+2003-03-05 Vee Satayamas <virasj@users.sourceforge.net>
 	* major bug fix in POS from wc_wordcut_result
 	* remove command line interface
 

@@ -1,3 +1,4 @@
+
 #include<wordcut/wcwordunit.h>
 #include<stdio.h>
 #include<stdlib.h>
@@ -10,7 +11,7 @@ main ()
   char *str = "โอเพ่นซอร์ส";
   size_t str_len;
   WcWordunitMap *wu_map;
-  int i;
+  int i,j;
 
   str_len = strlen (str);
   /* การค้นหาสายอักขระย่อยที่ต้องตามรูปแบบของคำ */
@@ -24,6 +25,14 @@ main ()
       start = wc_wordunit_map_assoc (wu_map, i);
       if (start != WC_WORDUNIT_NULL)
 	printf ("เริ่มต้น=%d\tสิ้นสุด=%d\n", start, i);
+    }
+  for (i=0;i<str_len;i++)
+    {
+      for(j=i;j<str_len;j++)
+	{
+	  printf ("เริ่มต้น=%d\tสิ้นสุด=%d\tผิดกฎ=%s\n", i, j,
+		  wc_wordunit_map_break(wu_map,i,j) ? "ผิด" : "ไม่");
+	}
     }
   return 0;
 }

@@ -18,8 +18,9 @@ typedef int WcWordType;
 typedef struct wc_wordcut_t
 {
   WcDict *dict;  
-  wc_boolean ext_dict;
-  wc_boolean debug_select_path;
+  wc_boolean ext_dict,
+    unk_join,
+    debug_select_path;
 } WcWordcut;
 
 typedef struct wc_wordcut_table_element_t
@@ -69,5 +70,5 @@ WcWordcut* wc_wordcut_new_with_dict(WcDict *dict);
 void wc_wordcut_init_with_dict(WcWordcut *self,WcDict *dict);
 WcWordcut* wc_wordcut_new_with_dictfile(const char *dict_filename);
 void wc_wordcut_init_with_dictfile(WcWordcut *self,const char *dict_filename,WC_STATUS *error);
-
+void wc_wordcut_no_unk_join(WcWordcut* self);
 #endif

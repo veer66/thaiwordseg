@@ -1,5 +1,20 @@
 #include<wordcut/wcwordcut.h>
+#include <limits.h>
 #include <assert.h>
+
+static void
+set_default(WcWordcut *self)
+{
+  self->ext_dict=WC_FALSE;
+  self->debug_select_path=WC_FALSE;
+  self->unk_join=WC_TRUE;
+}
+
+void
+wc_wordcut_no_unk_join(WcWordcut* self)
+{
+  self->unk_join=WC_FALSE;
+}
 
 static void
 join_front(WcWordcutResult* result,
@@ -153,8 +168,16 @@ set_element(WcWordcutTableElement* tab,WcWordcutTableElement* target,
 {
   if (start >= 0)
     {
+#ifdef DEBUG
+      printf ("SET ELEMENT start=%d brk[start]=%d\n",
+	      start,tab[start].brk_c);
+#endif
+      
       target->brk_c=tab[start].brk_c + 
-	(wc_wordunit_map_break(wu_map,start,stop) ? 1 : 0);
+	(wc_wordunit_map_break(wu_map,start+1,stop) ? 1 : 0);
+      
+      
+
       target->unk_ch_c=tab[start].unk_ch_c +
 	(wt==WC_WORD_TYPE_UNK ? 1 : 0);
       target->wu_c=tab[start].wu_c +
@@ -164,7 +187,7 @@ set_element(WcWordcutTableElement* tab,WcWordcutTableElement* target,
     }
   else
     {
-      target->brk_c=(wc_wordunit_map_break(wu_map,start,stop) ? 1 : 0);
+      target->brk_c=(wc_wordunit_map_break(wu_map,start+1,stop) ? 1 : 0);
       target->unk_ch_c=(wt==WC_WORD_TYPE_UNK ? 1 : 0);
       target->wu_c=(wt==WC_WORD_TYPE_WORDUNIT ? 1 : 0);
       target->dict_c=(wt==WC_WORD_TYPE_DICT ? 1 : 0);  
@@ -175,7 +198,7 @@ set_element(WcWordcutTableElement* tab,WcWordcutTableElement* target,
 static void
 dump_element(WcWordcutTableElement *tab)
 {
-  printf ("start=%d break=%d unk=%d wordunit=%d dict=%d\n",
+  printf ("start=%d:break=%d:unknown=%d:wordunit=%d:dict=%d\n",
 	  tab->start,tab->brk_c,tab->unk_ch_c,tab->wu_c,tab->dict_c);
 }
 
@@ -188,12 +211,25 @@ select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
   wc_boolean first=WC_TRUE;
   int start,i,len;
   
+  selected.type=-1;
+  selected.unk_ch_c=INT_MAX;
+  selected.brk_c=INT_MAX;
+  selected.wu_c=INT_MAX;
+  selected.dict_c=INT_MAX;
+
+
   /* from wordunit */
   start=wc_wordunit_map_assoc(wu_map,n);
   if(start!=WC_WORDUNIT_NULL)
     {
       set_element(tab,&canidate,start-1,n,
 		  WC_WORD_TYPE_WORDUNIT,wu_map);
+      if (debug)
+	{
+	  printf ("*** Wordunit n=%d Start=%d-->",n,start);
+	  dump_element(&canidate);
+	}
+
       if (first || element_cmp(&selected,&canidate)>0)
 	{
 	  first=WC_FALSE;
@@ -205,13 +241,18 @@ select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
 	  if (debug) 
 	    {
 	      /* debug select path */
-	      printf ("Select\tCanidate\n");
+	      printf ("WORDUNIT Last=%d Type=%c Start=%d\n",
+		      n,selected.type,start);
+	      printf ("Selected-->");
 	      dump_element(&selected);
+	      printf ("Canidate-->");
 	      dump_element(&canidate);
-	      printf ("%s: n=%d\tType = %c\n",__FILE__,n,selected.type);
+	      printf ("---------------------------------------------------\n");
 	    }
 	}
+
     }
+
   
 
   /* from dict */
@@ -228,18 +269,22 @@ select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
 	  selected=canidate;
 	  selected.type=WC_WORD_TYPE_DICT;
  	  selected.pos=wc_dict_map_assoc_pos_at(dict_map,n,i);
+	  selected.start=start;
 
 	  if(debug)
 	    {
-	      printf ("Select\tCanidate\n");
+	      printf ("Dict Last=%d Type=%c Start=%d\n",
+		      n,selected.type,start);
+	      printf ("Selected-->");
 	      dump_element(&selected);
+	      printf ("Canidate-->");
 	      dump_element(&canidate);
-	      printf ("%s: n=%d\tType=%c\tPos len = %d\n",
-		      __FILE__,n,selected.type,selected.pos->len);
+	      printf ("%s: n=%d\tType = %c\n",__FILE__,n,selected.type);
+	      printf ("---------------------------------------------------\n");
 	    }
 
 	  //assert(selected.pos!=NULL);
-	  selected.start=start;
+
 	}
     }
 
@@ -255,16 +300,21 @@ select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
 
       if(debug)
 	{
-	  printf ("Select\tCanidate\n");
+	  printf ("Unknown Last=%d Type=%c Start=%d\n",
+		  n,selected.type,n);
+	  printf ("Selected-->");
 	  dump_element(&selected);
+	  printf ("Canidate-->");
 	  dump_element(&canidate);
 	  printf ("%s: n=%d\tType = %c\n",__FILE__,n,selected.type);
+	  printf ("---------------------------------------------------\n");	  
 	}
     }
   tab[n]=selected;
   if(debug)
     {
-      printf ("N=%d\tTab[n] type=%c ",n,tab[n].type);
+      printf ("N=%d\tTab[n] type=%c\n",n,tab[n].type);
+      printf ("*************************************************\n");
       dump_element(&tab[n]);
     }
 }
@@ -508,7 +558,10 @@ wc_wordcut_cut(WcWordcut *self,const char* str,int len,WcWordcutResult *result)
       c++;
     }
   result->n=c;
-  join_unk(result); 
+  if (self->unk_join)
+    {
+      join_unk(result); 
+    }
   dup_pos(result);
   wc_dict_map_destroy(&dict_map);
   wc_wordunit_map_destroy(&wu_map);
@@ -547,7 +600,7 @@ wc_wordcut_new_with_dict(WcDict *dict)
 void 
 wc_wordcut_init_with_dict(WcWordcut *self,WcDict *dict)
 {
-  self->debug_select_path=WC_FALSE;
+  set_default(self);
   self->dict=dict;
   self->ext_dict=WC_TRUE;
 }
@@ -556,8 +609,7 @@ wc_wordcut_init_with_dict(WcWordcut *self,WcDict *dict)
 void 
 wc_wordcut_init(WcWordcut *self,WC_STATUS *error)
 {
-  self->ext_dict=WC_FALSE;
-  self->debug_select_path=WC_FALSE;
+  set_default(self);
   self->dict=wc_dict_new();
   if (wc_dict_load(self->dict,WC_SHARE_DATA_PATH "dict.etd")==WC_RET_NORMAL)
     *error=WC_RET_NORMAL;
@@ -569,14 +621,12 @@ wc_wordcut_init(WcWordcut *self,WC_STATUS *error)
 void 
 wc_wordcut_init_with_dictfile(WcWordcut *self,const char *dict_filename,WC_STATUS *error)
 {
-  self->ext_dict=WC_FALSE;
+  set_default(self);
   self->dict=wc_dict_new();
-  self->debug_select_path=WC_FALSE;
   if (wc_dict_load(self->dict,dict_filename)==WC_RET_NORMAL)
     *error=WC_RET_NORMAL;
   else
     *error=WC_RET_ERROR;
-
 }
 
 WcWordcut*

@@ -4,7 +4,7 @@ int
 main ()
 {
   /* ประกาศตัวแปร */
-  char *str = "ปลาตากลม";
+  char *str = "โอเพ่นซอร์ส";
   WcDict dict;
   WcDictMap map;
   const WcDictIterPos *pos;
