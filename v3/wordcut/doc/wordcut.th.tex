@@ -1,0 +1,28 @@
+\documentclass{book}
+\usepackage[english,thai]{babel}
+\title{คู่มือโปรแกรมตัดคำ}
+\author{วีร์  สัตยมาศ (virasj@users.sourceforge.net)}
+\begin{document}
+\thai{
+\maketitle
+
+\chapter{บทนำ}
+โปรแกรมตัดคำเป็นโปรแกรมสำหรับหาขอบเขตของคำในภาษาไทย
+\chapter{การใช้งานโปรแกรมตัดคำ}
+\section{การใช้งานพจนานุกรม}
+โปรแกรมตัดคำใช้พจนานุกรมช่วยในการตัดคำ พจนานุกรมประกอบ
+ไปด้วยคำและชนิดของคำถูกเก็บโดยใช้โครงสร้างข้อมูลแบบทรัย
+\subsection{คลาส WcDict}
+
+\subsubsection{โครงสร้างของ WcDict}
+\begin{verbatim}
+typedef struct {
+  char **pos;
+  wc_uint32 pos_size,root,size;
+  wc_uchar *tab;
+} WcDict
+\end{verbatim}
+
+\subsubsection{ตัวสร้าง WcDict}
+}
+\end{document}
