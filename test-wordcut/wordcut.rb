@@ -176,7 +176,7 @@ module TestWordcut
 
     end        
 
-    def cutline(str,delimiter='|')
+    def cutline(str,delimiter=' | ')
 
       buf=""
 
@@ -200,24 +200,31 @@ module TestWordcut
     def post_wordcut(result)
       i=0
       while i<result.length do
-	print "i=#{i}\t#{result[i].surface}\n"
+	deleted=false
+	#print "i=#{i}\t#{result[i].surface}\n"
 	if(result[i].surface.length==1)
 	  
 	  if(i==0)
 	    if(result.length>1)
+	      print "JOIN #{result[i].surface} + #{result[i+1].surface}\n"
 	      result[i+1].surface=result[i].surface + result[i+1].surface
 	      result[i+1].pos=nil
 	      result[i+1].type=Word::JOIN
 	      result.delete_at(i)
+	      deleted=true
 	    end
 	  else
+	      print "JOIN #{result[i-1].surface} + #{result[i].surface}\n"
 	      result[i-1].surface=result[i-1].surface + result[i].surface
 	      result[i-1].pos=nil
 	      result[i-1].type=Word::JOIN
 	      result.delete_at(i)
+	      deleted=true
 	  end
 	end
-	i=i+1	
+	if not deleted then
+	  i=i+1	
+	end
       end
       return result
     end
@@ -256,11 +263,30 @@ module TestWordcut
     end
 
   end
+
+  class WordUnit
+    def initialize(filename='unit.rul')
+      f=open(filename)
+      @rule=[]
+      while f.gets do 
+     	@rule << $_.chomp 
+      end
+      f.close
+    end	
+
+
+    def dump_rule
+      @rule.each { |rul| print "#{rul}\n" }
+    end
+  end
+
+
 end
 
 # main
 if $0 == __FILE__ then
-  wc=TestWordcut::Wordcut.new(WcDict.new(DictPath))
-  result=wc.cut("ตากลม")
-  result.dump
+  #  wc=TestWordcut::Wordcut.new(WcDict.new(DictPath))
+  #  result=wc.cut("ตากลม")
+  #  result.dump
+  unit=TestWordcut::WordUnit.new
 end
