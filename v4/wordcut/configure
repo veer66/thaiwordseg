@@ -3743,7 +3743,7 @@ exec 5>>./config.log
 #AC_C_CONST
 
 #AC_FUNC_ALLOCA
-                                        ac_config_files="$ac_config_files Makefile wordcut/Makefile data/Makefile wordcut/path.h"
+                                                  ac_config_files="$ac_config_files Makefile wordcut/Makefile data/Makefile wordcut/path.h wordcut.pc"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -4322,6 +4322,7 @@ do
   "wordcut/Makefile" ) CONFIG_FILES="$CONFIG_FILES wordcut/Makefile" ;;
   "data/Makefile" ) CONFIG_FILES="$CONFIG_FILES data/Makefile" ;;
   "wordcut/path.h" ) CONFIG_FILES="$CONFIG_FILES wordcut/path.h" ;;
+  "wordcut.pc" ) CONFIG_FILES="$CONFIG_FILES wordcut.pc" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

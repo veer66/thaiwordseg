@@ -196,6 +196,19 @@ typedef struct
 }
 PathInfo;
 
+
+static void
+dump_path(PathInfo *path,size_t len)
+{
+    int i;
+    for(i=0;i<len;i++) {
+        printf ("[%d,link=%d,brk=%d,tok=%d]\n",i,path[i].link,path[i].brk,path[i].tok);
+        
+    }
+    printf ("\n");
+}
+
+
 void
 wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
 {
@@ -251,7 +264,7 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
 
 
     
-    for(i=len;i>=0;i--) {
+    for(i=len-1;i>=0;i--) {
         int unk_p;
         if (chunk_graph[i]!=(-1)) {
             unk_p=chunk_graph[i];
@@ -261,7 +274,10 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
         path[i].link=unk_p;
         path[i].tok = path[unk_p].tok + 1;
         path[i].unk = path[unk_p].unk + 1;
-        path[i].brk = path[unk_p].unk + break_chunk(chunk_tab,len,i,unk_p);                       
+        path[i].brk = path[unk_p].brk + break_chunk(chunk_tab,len,i,unk_p);
+
+
+        
         for(j=idx[i];j<idx[i+1];j++) {
             int brk,tok,unk;
             c=graph[j];
@@ -291,9 +307,9 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
                 path[i].tok=tok;
                 path[i].unk=unk;
             }
-
-            
-        }        
+        
+        }
+        /* printf ("i=%d\n",i);dump_path(path,len); */
     }
 
 

@@ -23,6 +23,7 @@ dnl Checks for library functions.
 AC_OUTPUT(	
 	Makefile  \
 	wordcut/Makefile \
-	data/Makefile 
-	wordcut/path.h
+	data/Makefile \
+	wordcut/path.h \
+	wordcut.pc
 )
