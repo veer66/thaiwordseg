@@ -1,0 +1,6 @@
+#ifndef __PATH_H__
+#define __PATH_H__
+
+#define DICT_FILENAME "@top_builddir@/data/dict.etd"
+
+#endif
