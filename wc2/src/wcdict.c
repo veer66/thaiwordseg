@@ -40,11 +40,13 @@ read_tab(WcDict *self,FILE *fp)
 static void
 dump_node(WcDict *self,wc_uint32 p,int level)
 {
-  wc_uchar type_term=self->tab[p];
   wc_uchar type;
   wc_byte pos_len;
   wc_byte child_count;
+  wc_byte len;
+  wc_uint32 child;
   int i;
+ 
   type=(self->tab[p] & 0xF0) >> 4;
   printf ("Node Pos = 0x%X\tLevel=%d\n",p,level);
   printf ("Type = ");
@@ -61,6 +63,7 @@ dump_node(WcDict *self,wc_uint32 p,int level)
       break;
     default:
       printf ("Error");
+      WC_HALT("Error dumping node");
       break;
     }
   printf ("\n");
@@ -85,12 +88,42 @@ dump_node(WcDict *self,wc_uint32 p,int level)
 	  printf ("%c ",self->tab[p+i]);	  
 	}
       printf ("\n");
+      
+      
+      p=p+child_count;
+      printf ("-----------------------------------\n");
+      for(i=0;i<child_count*3;i++)
+	{
+	  printf ("%2X ",self->tab[p+i]);
+	}
+      printf ("\n");
+      for(i=0;i<child_count;i++)
+	{
+	  printf ("Child = 0x%X\n",
+		  child=(*(wc_uint32 *)&self->tab[p+i*3] & 0x00FFFFFF));     
+	  dump_node(self,child,level+1);
+	}
+      printf ("+++++++++++++++++++++++++++++++++++\n");
       break;
     case 2:
+      
       /* POS Only */
       break;
     case 3:
       /* Compressed */ 
+      len=self->tab[p];
+      p++;
+      for(i=0;i<len;i++)
+	{
+	  printf ("%c",self->tab[p+i]);
+	}
+      printf ("\n");
+      p=p+i;
+
+      printf ("-----------------------------------\n");
+      printf ("Child = 0x%X\n",child=(*(wc_uint32 *)&self->tab[p] & 0x00FFFFFF));
+      dump_node(self,child,level+1);
+      printf ("+++++++++++++++++++++++++++++++++++\n");
       break;
     default:
       /* Error */
@@ -102,6 +135,74 @@ static void
 wc_dict_dump_node(WcDict *self)
 {
   dump_node(self,self->root,0);
+}
+
+#define MAX_BUFFER 1024
+
+
+static void
+dump_wordlist(WcDict *self,char *buffer,wc_uint32 p,int level)
+{
+  wc_boolean terminate;
+  wc_uchar type;
+  wc_byte pos_len,len;
+  int i;
+  wc_uint32 child;
+  
+  terminate = self->tab[p] & 0xF;
+  type = self->tab[p] & 0xF0;
+  if (terminate)
+    {
+      /* print word */
+      buffer[level] = '\0';
+      printf ("%s\n",buffer);
+    }
+  p++;
+  pos_len=self->tab[p];
+  p++;
+  p=p+pos_len;
+  switch (type)
+    {
+    case 0x10: /*binary*/
+      len=self->tab[p];
+      if (len>0)
+	{
+	  p++;
+	  for(i=0;i<len;i++)
+	    {
+	      buffer[level]=self->tab[p+i];
+	      child=*(wc_uint32 *)&self->tab[p+len+i*3] & 0x00FFFFFF;
+	      dump_wordlist(self,buffer,child,level+1);
+	    }
+	}
+      break;
+    case 0x20: /* pos only */
+      break;
+    case 0x30: /* compressed suffix */
+      len=self->tab[p];
+      if(len>0)
+	{
+	  p++;
+	  for(i=0;i<len;i++)
+	    {
+	      buffer[level+i]=self->tab[p+i];
+	    }
+	  p=p+len;
+	  child=*(wc_uint32 *)&self->tab[p] & 0x00FFFFFF;
+	  dump_wordlist(self,buffer,child,level+len);
+	}
+      break;
+    default:
+      WC_HALT("Type error.");
+      break;
+    }
+}
+
+static void
+wc_dict_dump_wordlist(WcDict *self)
+{
+  char buffer[MAX_BUFFER];
+  dump_wordlist(self,buffer,self->root,0);
 }
 
 WC_STATUS
@@ -153,7 +254,7 @@ wc_dict_delete(WcDict* self)
 
 
 static void 
-test_read_pos(const char dictfile[])
+test_dump_node(const char dictfile[])
 {
   WcDict *dict=wc_dict_new();
   if (wc_dict_load(dict,dictfile)!=WC_RET_NORMAL) 
@@ -162,11 +263,21 @@ test_read_pos(const char dictfile[])
   wc_dict_delete(dict);
 }
 
+static void
+test_dump_wordlist(const char dictfile[])
+{
+  WcDict *dict=wc_dict_new();
+  if (wc_dict_load(dict,dictfile)!=WC_RET_NORMAL) 
+    WC_HALT("Reading POS Error");
+  wc_dict_dump_wordlist(dict);
+  wc_dict_delete(dict);
+}
+
 int 
 main (int argc,char** argv) 
 {
   if (argc!=2) WC_HALT("Invalid argument.");
-  test_read_pos(argv[1]);
+   test_dump_wordlist(argv[1]); 
   return 0;
 }
 
