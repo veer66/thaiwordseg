@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(wordcut/wordcut_mkdict.c)
-AM_INIT_AUTOMAKE(wordcut,0.5.1b1)
+AM_INIT_AUTOMAKE(wordcut,0.5.1b2)
 AC_SUBST(VERSION)
 
 dnl Checks for programs.
@@ -25,5 +25,6 @@ AC_OUTPUT(
 	wordcut/Makefile \
 	data/Makefile \
 	wordcut/path.h \
+  example \
 	wordcut.pc
 )
