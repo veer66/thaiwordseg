@@ -105,6 +105,12 @@ mk_morpho_chunk_tab(const char* str,size_t len)
         if(buf<2 && *p>='¡' && *p<='Î' && p[1]>='Ð' && p[1]<='Ù') {
             buf=2;
         }
+/* Wait until next version ... try to merge »êÍ»ÍÒÂ by rules
+	if(buf<3 && *p>='¡' && *p<='Î' && p[1]>='è' && p[1]>='ë' && 
+	   (*p!='º' || *p!='è')) {
+	     buf=3;
+	}
+*/
          
         /* printf ("i=%d buf=%d *p=%c\n",i,buf,*p); */
         
@@ -220,9 +226,11 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
     WordcutDict *dict=&self->dict;
     WordcutDictNode node;
     size_t graph_size=len+len;
-    int *idx,*graph,gcount,c,*chunk_tab,*chunk_graph;
+    int *idx,*graph,gcount,c,*chunk_tab,*chunk_graph,cc;
     PathInfo *path;
     int single_lead,offset;
+    WordcutResult *tmp_result;
+    int *marker;
 
     if (len > DEFAULT_GRAPH_SIZE) {
         graph_size=len+len;
@@ -233,6 +241,7 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
     idx=(int *)xmalloc(sizeof(int)*(len+1));
     graph=(int *)xmalloc(sizeof(int)*graph_size);
     path=(PathInfo *)xmalloc(sizeof(PathInfo)*(len+1));
+    tmp_result=(WordcutResult *)xmalloc(sizeof(WordcutResult));
 
     chunk_tab=mk_morpho_chunk_tab(str,len);
     chunk_graph=mk_morpho_chunk_graph(chunk_tab,len);
@@ -244,10 +253,11 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
         wordcut_dict_node(&node,dict);
         walk_result=0;
         for(j=i;walk_result!=WORDCUT_DICT_WALK_FAIL && j<len;j++) {
-            /* printf ("!!! i=%d j=%d p1=%d p2=%d status=%d size=%d ch=%c\n",
-               i,j,node.p1,node.p2,node.status,node.size,str[j]);*/
+/*            printf ("!!! i=%d j=%d p1=%d p2=%d status=%d size=%d ch=%c\n",
+	      i,j,node.p1,node.p2,node.status,node.size,str[j]); */
             walk_result=wordcut_dict_walk(&node,(unsigned char)str[j]);
-            /* printf ("@@@ p1=%d p2=%d status=%d size=%d word_result=%d\n",
+/*
+            printf ("@@@ p1=%d p2=%d status=%d size=%d word_result=%d\n",
                     node.p1,node.p2,node.status,node.size,
                     walk_result);*/
             if (walk_result==WORDCUT_DICT_WALK_COMPLETE) {
@@ -309,40 +319,74 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
             }
         
         }
-        /* printf ("i=%d\n",i);dump_path(path,len); */
+/*         printf ("i=%d\n",i);dump_path(path,len);  */
     }
 
 
     
-    result->start=(int *)malloc(sizeof(int)*len);
-    result->offset=(int *)malloc(sizeof(int)*len);
+    result->start=(int *)xmalloc(sizeof(int)*len);
+    result->offset=(int *)xmalloc(sizeof(int)*len);
+
+    tmp_result->start=(int *)xmalloc(sizeof(int)*len);
+    tmp_result->offset=(int *)xmalloc(sizeof(int)*len);
+
+    marker=(int *)xmalloc(sizeof(int)*len);
+
+    bzero(marker,sizeof(int)*len);
 
     single_lead = 0;
     
     for(c=0,j=0;j!=len;j=i) {
         i=path[j].link;
-        offset=i-j;
-
-        
-        if (offset==1) {
-            if (c==0) {
-                single_lead=1;
-            } else {
-                /* auto merge */
-                result->offset[c-1]++;
-            }
-        } else {
-
-            result->start[c]=j;
-            result->offset[c]=i-j;
-            
-            if (c==2 && single_lead) {
-                result->start[c]--;
-            }
+        offset=i-j;        	
+            tmp_result->start[c]=j;
+            tmp_result->offset[c]=i-j;            
             c++;
-        }
     }
-    result->count=c;
+
+
+    for(i=c-1;i>=0;i--) {
+	 if(tmp_result->offset[i]==1) {
+	      if(i!=0 && (i+1==c || marker[i+1]==0)) {
+		   marker[i]=1;
+	      } else {
+		   if (i>1 && marker[i+1]==0) {
+			marker[i]=1;
+		   }
+	      }
+	 }
+    }
+
+    cc=0;
+    if(c>1 && (marker[0]==1 || marker[1]==1)) {
+	 result->start[0]=tmp_result->start[0];
+	 result->offset[0]=tmp_result->offset[0] + tmp_result->offset[1];
+	 cc=1;
+	 i=2;
+    } else {
+	 result->start[0]=tmp_result->start[0];
+	 result->offset[0]=tmp_result->offset[0];
+	 cc=1;
+	 i=1;
+    }
+
+    for(;i<c;i++) {
+	 if (marker[i]!=1) {
+	      if (i+1<c && marker[i+1]==1) {
+		   printf ("!!! of[i]=%d\tof[i=1]=%d\n",tmp_result->offset[i],
+			   tmp_result->offset[i+1]);
+		   result->start[cc]=tmp_result->start[i];
+		   result->offset[cc]=tmp_result->offset[i]+tmp_result->offset[i+1];
+		   cc++;
+	      }  else {
+		   result->start[cc]=tmp_result->start[i];
+		   result->offset[cc]=tmp_result->offset[i];
+		   cc++;
+	      }
+	 }
+    }
+
+    result->count=cc;
     
     result->str=(char *)xmalloc(sizeof(char)*(len+1));
     strcpy(result->str,str);
@@ -352,6 +396,10 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
     free(graph);
     free(chunk_tab);
     free(chunk_graph);
+    free(tmp_result->start);
+    free(tmp_result->offset);
+    free(tmp_result);
+    free(marker);
 }
 
 
@@ -369,4 +417,3 @@ wordcut_result_close(WordcutResult *self)
     free(self->offset);
     free(self->str);
 }
-
