@@ -4,6 +4,12 @@
 static VALUE cWcDict,rb_eWcDictError,cWcDictIter,
   cWcDictIterPos,cWcDictMap;
 
+VALUE 
+ruby_wc_dict_iter_pos()
+{
+  return cWcDictIterPos;
+}
+
 static void
 free_wc_dict(WcDict* self)
 {
@@ -104,7 +110,7 @@ mark_wc_dict_iter_pos(WcDictIterPos* self)
   rb_gc_mark((VALUE)self->dict);
 }
 
-static void
+void
 free_wc_dict_iter_pos(WcDictIterPos* self)
 {
   if(self!=NULL)
