@@ -66,9 +66,9 @@ mk_morpho_chunk_tab(const char* str,size_t len)
             (p[2]>='Ô' && p[2]<='×')) {
             /* to check Í and Â is probably worth */
             if (p[3]>='è' && p[3]<='ë') {
-                if (buf<4) buf=4;                
+                if (buf<5) buf=5;                
             } else {
-                if (buf<3) buf=3;
+                if (buf<4) buf=4;
             }
         } else if (*p=='à' && p[1]!='¡' && p[2]=='ç') {
             if(buf<4) buf=4;
@@ -90,12 +90,8 @@ mk_morpho_chunk_tab(const char* str,size_t len)
             buf=2;
         }
 
-        if(buf<3 && p[2]=='ì') {
-            buf=3;
-        }
-
-        if(buf<2 && *p>='¡' && *p<='Î' && p[1]=='Ù') {
-            buf=2;
+        if(buf<4 && p[3] =='ì') {
+            buf=4;
         }
 
         if(buf<4 && *p>='¡' && *p<='Î' && p[1]=='×') {
@@ -106,7 +102,7 @@ mk_morpho_chunk_tab(const char* str,size_t len)
             }
         }
 
-        if(buf<2 && *p>='¡' && *p<='Î' && p[1]>='Ô' && p[1]<='Ù') {
+        if(buf<2 && *p>='¡' && *p<='Î' && p[1]>='Ð' && p[1]<='Ù') {
             buf=2;
         }
          
@@ -132,7 +128,10 @@ mk_morpho_chunk_tab(const char* str,size_t len)
             }
         }
 
-/*        printf ("!!! "); for(x=0;x<len;x++) { printf("[%d]",tab[x]); } printf ("\n"); */
+/*        printf ("!!! ");
+        for(x=0;x<len;x++) {
+            printf("[%d]",tab[x]);
+            } printf ("\n");  */
     }
 
 
@@ -223,6 +222,7 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
     size_t graph_size=len+len;
     int *idx,*graph,gcount,c,*chunk_tab,*chunk_graph;
     PathInfo *path;
+    int single_lead;
 
     if (len > DEFAULT_GRAPH_SIZE) {
         graph_size=len+len;
@@ -277,13 +277,13 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
         } else {
             unk_p=i+1;
         }
-        unk_p=i+1;
+        
         path[i].link=unk_p;
         path[i].tok = path[unk_p].tok + 1;
         path[i].unk = path[unk_p].unk + 1;
-        path[i].brk = path[unk_p].brk + break_chunk(chunk_tab,len,i,unk_p);
+        path[i].brk = path[unk_p].brk + break_chunk(chunk_tab,len,i,unk_p-1);
         
-        for(j=idx[i];j<idx[i+1];j++) {
+        for(j=idx[i+1]-1;j>=idx[i];j--) {
             int brk,tok,unk;
             c=graph[j];
             tok=path[c].tok+1;
@@ -302,9 +302,10 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
               (unk==path[i].unk && tok<path[i].tok ))*/
             
             {
+                
                 path[i].link=c;
                 path[i].tok=tok;
-                path[i].unk=unk;
+                path[i].unk=unk; 
             }
         
         }
@@ -315,11 +316,27 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
     
     result->start=(int *)malloc(sizeof(int)*len);
     result->offset=(int *)malloc(sizeof(int)*len);
+
+    single_lead = 0;
     
     for(c=0,j=0;j!=len;j=i,c++) {
-        i=path[j].link;
-        result->start[c]=j;
-        result->offset[c]=i-j;
+        int offset=i-j;
+        if (offset==1) {
+            if (c==0) {
+                single_lead=1;
+            
+            } else {
+                result->offset[c]++;
+            }
+        } else {
+            i=path[j].link;
+            result->start[c]=j;
+            result->offset[c]=i-j;
+            
+            if (c==2 && single_lead) {
+                result->start[c]--;
+            }
+        }
     }
     result->count=c;
     
