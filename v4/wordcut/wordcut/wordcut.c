@@ -80,9 +80,9 @@ mk_morpho_chunk_tab(const char* str,size_t len)
         }
         if(buf<3 && p[1]=='Ñ') {
             if (p[2]>='è' && p[2]<='ë') {
-                buf=3;
+                buf=4;
             } else if (buf<2) {
-                buf=2;
+                buf=3;
             }
 	}
         
@@ -121,9 +121,10 @@ mk_morpho_chunk_tab(const char* str,size_t len)
             for(k=i;k<pre_stop;k++) {
                 tab[k]=c;
             }
+
             if(tab[pre_stop]!=0) {
-                bak=tab[pre_stop+1];
-                for(j=pre_stop+1;j<len && tab[j]==bak;j++) {
+                bak=tab[pre_stop];
+                for(j=pre_stop;j<len && tab[j]==bak;j++) {
                     tab[j]=c;
                 }
             } else {
@@ -131,7 +132,7 @@ mk_morpho_chunk_tab(const char* str,size_t len)
             }
         }
 
-        /* for(x=0;x<len;x++) { printf("[%d]",tab[x]); } printf ("\n"); */
+/*        printf ("!!! "); for(x=0;x<len;x++) { printf("[%d]",tab[x]); } printf ("\n"); */
     }
 
 
@@ -243,7 +244,12 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
         wordcut_dict_node(&node,dict);
         walk_result=0;
         for(j=i;walk_result!=WORDCUT_DICT_WALK_FAIL && j<len;j++) {
+            /* printf ("!!! i=%d j=%d p1=%d p2=%d status=%d size=%d ch=%c\n",
+               i,j,node.p1,node.p2,node.status,node.size,str[j]);*/
             walk_result=wordcut_dict_walk(&node,(unsigned char)str[j]);
+            /* printf ("@@@ p1=%d p2=%d status=%d size=%d word_result=%d\n",
+                    node.p1,node.p2,node.status,node.size,
+                    walk_result);*/
             if (walk_result==WORDCUT_DICT_WALK_COMPLETE) {
                 if(gcount==graph_size) {
                     graph_size=graph_size+graph_size;
@@ -271,12 +277,11 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
         } else {
             unk_p=i+1;
         }
+        unk_p=i+1;
         path[i].link=unk_p;
         path[i].tok = path[unk_p].tok + 1;
         path[i].unk = path[unk_p].unk + 1;
         path[i].brk = path[unk_p].brk + break_chunk(chunk_tab,len,i,unk_p);
-
-
         
         for(j=idx[i];j<idx[i+1];j++) {
             int brk,tok,unk;
@@ -285,23 +290,17 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
             unk=path[c].unk;
             brk=path[c].brk+break_chunk(chunk_tab,len,i,path[c].link-1);
 
-            if(                
-                brk<path[i].brk
-                ||
-                (
-                    brk==path[i].brk
-                    &&
-                    (
-                        unk<path[i].unk
-                        ||
-                        (
-                            unk==path[i].unk
-                            &&
-                            tok<path[i].tok
-                            )  
-                        )
-                    )
-                )
+            /* printf ("I=%d\tC=%d\n",i,c); */
+            
+            if(brk<path[i].brk ||
+               (brk==path[i].brk &
+              
+                (unk<path[i].unk ||
+                 (unk==path[i].unk && tok<path[i].tok ))))
+            
+/*            if  (unk<path[i].unk ||
+              (unk==path[i].unk && tok<path[i].tok ))*/
+            
             {
                 path[i].link=c;
                 path[i].tok=tok;

@@ -95,6 +95,7 @@ int wordcut_dict_walk(WordcutDictNode *node,unsigned char key) {
                 node->p1=p1;
                 return ((data[p1] & 1))+WORDCUT_DICT_WALK_OK;
             } else {
+                node->p2=p2;
                 return WORDCUT_DICT_WALK_OK;
             }
         } else {
@@ -103,6 +104,7 @@ int wordcut_dict_walk(WordcutDictNode *node,unsigned char key) {
     } else {
         int l,r,m;
         uint8_t t;
+
         l=0;
         r=node->size-1;
         while (l<=r) {
@@ -124,3 +126,7 @@ int wordcut_dict_walk(WordcutDictNode *node,unsigned char key) {
         return WORDCUT_DICT_WALK_FAIL;
     }
 }
+
+
+
+
