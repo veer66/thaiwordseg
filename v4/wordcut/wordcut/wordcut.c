@@ -171,18 +171,14 @@ mk_morpho_chunk_graph(int *tab,size_t len) {
 	{
             stop=i;
             if(start!=(-1) && prev!=0) {
-                printf ("start=%d,stop=%d\n",start,stop);
-                map[start]=stop+1;
+                map[start]=stop;
             }
             start=i;
             prev=tab[i];
 	}
     }
     if(prev!=0) map[start]=len;
-    for(i=0;i<len;i++) {
-        printf("[%d,%d] ",i,map[i]);
-    }
-    printf ("\n");
+    
     return map;
 }
 
@@ -196,7 +192,7 @@ wordcut_init(Wordcut *self,const char *dict_filename)
 
 typedef struct
 {
-    int brk,unk,tok,link;
+    int brk,unk,utok,tok,link;
 }
 PathInfo;
 
@@ -249,18 +245,23 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
 
     path[len].link = (-1);
     path[len].unk = 0;
+    path[len].utok = 0;
     path[len].tok = 0;
     path[len].brk = 0;
 
+
     
     for(i=len;i>=0;i--) {
-        path[i].link=i+1;
-        path[i].tok = path[i+1].tok + 1;
-        path[i].unk = path[i+1].unk + 1;
-        path[i].brk = path[i+1].unk + break_chunk(chunk_tab,len,i,i);
-
-        printf ("U!!! i=%d s=%d b=%d\n",i,i,break_chunk(chunk_tab,len,i,i)); 
-
+        int unk_p;
+        if (chunk_graph[i]!=(-1)) {
+            unk_p=chunk_graph[i];
+        } else {
+            unk_p=i+1;
+        }
+        path[i].link=unk_p;
+        path[i].tok = path[unk_p].tok + 1;
+        path[i].unk = path[unk_p].unk + 1;
+        path[i].brk = path[unk_p].unk + break_chunk(chunk_tab,len,i,unk_p);                       
         for(j=idx[i];j<idx[i+1];j++) {
             int brk,tok,unk;
             c=graph[j];
@@ -268,10 +269,7 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
             unk=path[c].unk;
             brk=path[c].brk+break_chunk(chunk_tab,len,i,path[c].link-1);
 
-            printf ("D!!! i=%d s=%d b=%d\n",i,path[c].link-1,break_chunk(chunk_tab,len,i,path[c].link-1)); 
-            
-            if(
-                x<sdd
+            if(                
                 brk<path[i].brk
                 ||
                 (
@@ -293,6 +291,8 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
                 path[i].tok=tok;
                 path[i].unk=unk;
             }
+
+            
         }        
     }
 

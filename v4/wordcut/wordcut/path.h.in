@@ -1,0 +1,6 @@
+#ifndef __WORDCUT_PATH_H__
+#define __WORDCUT_PATH_H__
+
+#define WORDCUT_DATA_PATH "@prefix@/share/wordcut"
+
+#endif 

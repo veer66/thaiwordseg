@@ -22,5 +22,7 @@ dnl Checks for library functions.
 #AC_FUNC_ALLOCA
 AC_OUTPUT(	
 	Makefile  \
-	wordcut/Makefile
+	wordcut/Makefile \
+	data/Makefile 
+	wordcut/path.h
 )
