@@ -13,4 +13,4 @@ wordcut.dvi : wordcut.tex
 	latex $<
 
 clean :
-	rm -f *.dvi *.log *.aux *.idx *.ind *.ilg wordcut.tex
+	rm -f *.dvi *.log *.aux *.idx *.ind *.ilg wordcut.tex *.toc
