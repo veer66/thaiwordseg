@@ -2,13 +2,14 @@
 #include<stdio.h>
 #include<wordcut/wcdict.h>
 
-
+/* #define WC_DEBUG */
 
 static void
 dump_iterator_info(WcDictIter *self)
 {
   printf ("Dict=0x%X\n",(unsigned int)self->dict);
   printf ("P=0x%X\tI=%d\n",self->p,self->i);
+#ifdef WC_ITER_EXTRA_INFO
   printf ("Type=");
   switch (self->type)
     {
@@ -17,6 +18,7 @@ dump_iterator_info(WcDictIter *self)
     case WC_NODE_TYPE_POS: printf ("POS"); break;
     default: printf ("ERR"); break;
     }
+#endif
   printf ("\tterminator=%c\n",self->terminator ? 'T':'F');
   printf ("Status=");
   switch(self->status)
@@ -309,8 +311,12 @@ wc_dict_root(WcDict *self,WcDictIter* iter)
   iter->dict=self;
   iter->status=WC_DICT_ITER_ACTIVE;
   iter->terminator=WC_FALSE;
+
+#ifdef WC_DICT_ITER_EXTRA_INFO
   iter->type=WC_NODE_TYPE_START;
+#endif
   iter->i=0;
+  iter->i_state=WC_DICT_ITER_I_RESET;
 }
 
 
@@ -383,7 +389,9 @@ wc_dict_iter_transit(WcDictIter *self,char ch)
 #ifdef WC_DEBUG
       printf ("BIN\n");
 #endif
+#ifdef WC_DICT_ITER_EXTRA_INFO
       self->type=WC_NODE_TYPE_BIN;
+#endif
       len=dict->tab[p];
       if (len <= 0) return WC_RET_ERROR;
       p++;
@@ -408,7 +416,9 @@ wc_dict_iter_transit(WcDictIter *self,char ch)
 #ifdef WC_DEBUG
       printf ("POS ONLY\n");
 #endif
+#ifdef WC_DICT_ITER_EXTRA_INFO
       self->type=WC_NODE_TYPE_POS;
+#endif
       self->status=WC_DICT_ITER_DEAD;
       return WC_RET_NORMAL;
       break;
@@ -416,14 +426,28 @@ wc_dict_iter_transit(WcDictIter *self,char ch)
 #ifdef WC_DEBUG
       printf ("Compressed Suffix\n");
 #endif
-      if (self->type!=WC_NODE_TYPE_SEQ)
+      if (self->i_state==WC_DICT_ITER_I_RESET)
 	{
 	  self->i=0;
+
+#ifdef WC_DICT_ITER_EXTRA_INFO
 	  self->type=WC_NODE_TYPE_SEQ;
+#endif
+
+	  self->i_state=WC_DICT_ITER_I_INUSE;
 	}
       len=dict->tab[p];      
       p++;
-      assert(self->i<len);
+
+
+#ifdef WC_DEBUG
+      if (self->i>=len)
+	{
+	  printf ("Self->i=%d\tLen=%d\n",self->i,len);
+	}
+#endif
+      assert(self->i<len); 
+
       if(len>0)
 	{
 	  if (dict->tab[self->i+p]==uch)
@@ -437,6 +461,7 @@ wc_dict_iter_transit(WcDictIter *self,char ch)
 		  child=get_child(dict->tab,p+len);
 		  self->terminator=dict->tab[child] & 0xF;
 		  self->p=child;
+		  self->i_state=WC_DICT_ITER_I_RESET;
 		}
 	    }
 	  else

@@ -24,13 +24,18 @@ typedef int WcNodeType;
 #define WC_DICT_ITER_ACTIVE   0
 #define WC_DICT_ITER_DEAD     1
 
+#define WC_DICT_ITER_I_RESET  0
+#define WC_DICT_ITER_I_INUSE  1
 
 typedef struct wc_dict_iter_t {
   WcDict* dict;
   wc_uint32 p,i;
-  WcNodeType type;
+  int i_state;
   wc_boolean terminator;
   WcDictIterStatus status;
+#ifdef WC_ITER_EXTRA_INFO
+  WcNodeType type;
+#endif
 } WcDictIter;
 
 
