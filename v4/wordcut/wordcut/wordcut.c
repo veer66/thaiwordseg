@@ -214,6 +214,16 @@ dump_path(PathInfo *path,size_t len)
 }
 
 
+static void
+dump_marker(int *marker,size_t size)
+{
+     size_t i;
+     for(i=0;i<size;i++)  {
+	  printf("%d ",marker[i]);
+     }
+     printf ("\n");
+}
+
 void
 wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
 {
@@ -331,7 +341,7 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
 
      marker=(int *)xmalloc(sizeof(int)*len);
 
-     bzero(marker,sizeof(int)*len);
+     memset(marker,0,sizeof(int)*len);
 
      single_lead = 0;
     
@@ -342,14 +352,13 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
 	  tmp_result->offset[c]=i-j;            
 	  c++;
      }
-
-
+ 
      for(i=c-1;i>=0;i--) {
 	  if(tmp_result->offset[i]==1) {
 	       if(i!=0 && (i+1==c || marker[i+1]==0)) {
 		    marker[i]=1;
 	       } else {
-		    if (i>1 && marker[i+1]==0) {
+		    if (c>1 && marker[i+1]==0) {
 			 marker[i]=1;
 		    }
 	       }
@@ -372,9 +381,7 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
      for(;i<c;i++) {
 	  if (marker[i]!=1) {
 	       if (i+1<c && marker[i+1]==1) {
-		    printf ("!!! of[i]=%d\tof[i=1]=%d\n",tmp_result->offset[i],
-			    tmp_result->offset[i+1]);
-		    result->start[cc]=tmp_result->start[i];
+	       result->start[cc]=tmp_result->start[i];
 		    result->offset[cc]=tmp_result->offset[i]+tmp_result->offset[i+1];
 		    cc++;
 	       }  else {
@@ -384,6 +391,9 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
 	       }
 	  }
      }
+
+     
+
 
      result->count=cc;
     
