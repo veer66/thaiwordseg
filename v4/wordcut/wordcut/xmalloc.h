@@ -1,6 +1,3 @@
-#ifndef __WORDCUT_DICT_H__
-#define __WORDCUT_DICT_H__
-
 /*
  * Copyright (c) 2003 Vee Satayamas
  * All rights reserved.
@@ -31,27 +28,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include<stdint.h>
-#include<stdlib.h>
 
-typedef struct {
-    size_t size;
-    uint8_t *data;
-} WordcutDict;
-
-typedef struct {
-    int p1,p2,status,size;
-    uint8_t *data;
-} WordcutDictNode;
-
-
-#define WORDCUT_DICT_WALK_FAIL       1
-#define WORDCUT_DICT_WALK_OK         2
-#define WORDCUT_DICT_WALK_COMPLETE   3
-
-int wordcut_dict_init(WordcutDict *self,const char *filename); 
-void wordcut_dict_close(WordcutDict *self);
-void wordcut_dict_node(WordcutDictNode *self,WordcutDict *dict);
-int wordcut_dict_walk(WordcutDictNode *node,unsigned char key);
-
+#ifndef __XMALLOC_H__
+#define __XMALLOC_H__
+void* xmalloc(size_t size);
 #endif
+

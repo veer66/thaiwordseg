@@ -32,20 +32,10 @@
 #include<stdlib.h>
 #include<string.h>
 #include<assert.h>
-#include "wordcut_dict.h"
+#include <wordcut/xmalloc.h>
 
-typedef struct
-{
-    size_t count;
-    int *start;
-    int *offset;
-    char *str;
-} WordcutResult;
+#include <wordcut/wordcut.h>
 
-typedef struct
-{
-    WordcutDict dict;
-} Wordcut; 
 
 int
 wordcut_init(Wordcut *self,const char *dict_filename)
@@ -54,6 +44,13 @@ wordcut_init(Wordcut *self,const char *dict_filename)
     return wordcut_dict_init(&(self->dict),dict_filename);
 }
 
+
+typedef struct
+{
+    int unk,tok,link;
+}
+PathInfo;
+
 void
 wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
 {
@@ -61,17 +58,79 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
     size_t len=strlen(str);
     int i,j,walk_result;
     WordcutDict *dict=&self->dict;
-    WordcutNode node;
+    WordcutDictNode node;
+    size_t graph_size=len+len;
+    int *idx,*graph,gcount,c;
+    PathInfo *path;
     
+    idx=(int *)xmalloc(sizeof(int)*(len+1));
+    graph=(int *)xmalloc(sizeof(int)*graph_size);
+    path=(PathInfo *)xmalloc(sizeof(PathInfo)*(len+1));
+    
+    gcount=0;
+    idx[0]=0;
     for(i=0;i<len;i++)
     {
         wordcut_dict_node(&node,dict);
         walk_result=0;
-        for(j=i;walk_result!=WORDCUT_DICT_WALK_FAIL && j<len;j++)
-        {
-            walk_result=wordcut_dict_walk(&node,(unsigned char)str[j]);            
+        for(j=i;walk_result!=WORDCUT_DICT_WALK_FAIL && j<len;j++) {
+            walk_result=wordcut_dict_walk(&node,(unsigned char)str[j]);
+            if (walk_result==WORDCUT_DICT_WALK_COMPLETE) {
+                if(gcount==graph_size) {
+                    graph_size=graph_size+graph_size;
+                    graph=(int *)xrealloc(graph,graph_size);
+                }
+                graph[gcount]=j+1;
+                gcount++;
+            }            
         }
+        idx[i+1]=gcount;
     }
+
+    path[len].link = (-1);
+    path[len].unk = 0;
+    path[len].tok = 0;
+    
+    for(i=len;i>=0;i--) {
+        path[i].link=i;
+        path[i].tok = path[i+1].tok + 1;
+        path[i].unk = path[i+1].unk + 1;
+
+        for(j=idx[i];j<idx[i+1];j++) {
+            int tok,unk;
+            c=graph[j];
+            tok=path[c].tok+1;
+            unk=path[c].unk;
+            if(unk<path[i].unk) {
+                path[i].link=c;
+                path[i].tok=tok;
+                path[i].unk=unk;
+            } else if (unk==path[i].unk && tok<path[i].tok) {                
+                path[i].link=c;
+                path[i].tok=tok;
+                path[i].unk=unk;
+            }
+        }        
+    }
+
+
+    
+    result->start=(int *)malloc(sizeof(int)*len);
+    result->offset=(int *)malloc(sizeof(int)*len);
+    
+    for(c=0,j=0;j!=len;j=i,c++) {
+        i=path[j].link;
+        result->start[c]=j;
+        result->offset[c]=i-j;
+    }
+    result->count=c;
+    
+    result->str=(char *)xmalloc(sizeof(char)*(len+1));
+    strcpy(result->str,str);
+    
+    free(idx);
+    free(path);
+    free(graph);
 }
 
 
@@ -82,7 +141,11 @@ wordcut_close(Wordcut *self)
 }
 
 
-int main (int argc,char** argv) {
-    
-    return 0;
+void
+wordcut_result_close(WordcutResult *self)
+{
+    free(self->start);
+    free(self->offset);
+    free(self->str);
 }
+

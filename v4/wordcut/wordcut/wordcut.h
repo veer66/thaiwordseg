@@ -1,6 +1,3 @@
-#ifndef __WORDCUT_DICT_H__
-#define __WORDCUT_DICT_H__
-
 /*
  * Copyright (c) 2003 Vee Satayamas
  * All rights reserved.
@@ -31,27 +28,27 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include<stdint.h>
-#include<stdlib.h>
+#ifndef __WORDCUT_H__
+#define __WORDCUT_H__
 
-typedef struct {
-    size_t size;
-    uint8_t *data;
-} WordcutDict;
+#include <wordcut/wordcut_dict.h>
 
-typedef struct {
-    int p1,p2,status,size;
-    uint8_t *data;
-} WordcutDictNode;
+typedef struct
+{
+    size_t count;
+    int *start;
+    int *offset;
+    char *str;
+} WordcutResult;
 
+typedef struct
+{
+    WordcutDict dict;
+} Wordcut; 
 
-#define WORDCUT_DICT_WALK_FAIL       1
-#define WORDCUT_DICT_WALK_OK         2
-#define WORDCUT_DICT_WALK_COMPLETE   3
-
-int wordcut_dict_init(WordcutDict *self,const char *filename); 
-void wordcut_dict_close(WordcutDict *self);
-void wordcut_dict_node(WordcutDictNode *self,WordcutDict *dict);
-int wordcut_dict_walk(WordcutDictNode *node,unsigned char key);
+int wordcut_init(Wordcut *self,const char *dict_filename);
+void wordcut_cut(Wordcut *self,const char *str,WordcutResult *result);
+void wordcut_close(Wordcut *self);
+void wordcut_result_close(WordcutResult *self);
 
 #endif

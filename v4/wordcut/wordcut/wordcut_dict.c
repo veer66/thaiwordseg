@@ -29,14 +29,14 @@
  */
 
 #include<stdio.h>
-#include<stdlib.h>
-#include<stdint.h>
+
+
 #include<string.h>
 #include<assert.h>
 #include<fcntl.h>
 #include<unistd.h>
 #include<sys/stat.h>
-#include"wordcut_dict.h"
+#include<wordcut/wordcut_dict.h>
 
 int wordcut_dict_init(WordcutDict *self,const char *filename) {
     int fd=open(filename,O_RDONLY);

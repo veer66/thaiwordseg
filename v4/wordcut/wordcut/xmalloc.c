@@ -1,6 +1,3 @@
-#ifndef __WORDCUT_DICT_H__
-#define __WORDCUT_DICT_H__
-
 /*
  * Copyright (c) 2003 Vee Satayamas
  * All rights reserved.
@@ -31,27 +28,30 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include<stdint.h>
-#include<stdlib.h>
 
-typedef struct {
-    size_t size;
-    uint8_t *data;
-} WordcutDict;
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct {
-    int p1,p2,status,size;
-    uint8_t *data;
-} WordcutDictNode;
+void *
+xmalloc(size_t size)
+{
+    void *t;
+    t=malloc(size);
+    if (t==NULL) {
+        fprintf (stderr,"Could not allocate memory\n");
+        exit(1);
+    }
+    return t;
+}
 
-
-#define WORDCUT_DICT_WALK_FAIL       1
-#define WORDCUT_DICT_WALK_OK         2
-#define WORDCUT_DICT_WALK_COMPLETE   3
-
-int wordcut_dict_init(WordcutDict *self,const char *filename); 
-void wordcut_dict_close(WordcutDict *self);
-void wordcut_dict_node(WordcutDictNode *self,WordcutDict *dict);
-int wordcut_dict_walk(WordcutDictNode *node,unsigned char key);
-
-#endif
+void *
+xrealloc(void *ptr,size_t size)
+{
+    void *t;
+    t=realloc(ptr,size);
+    if (t==NULL) {
+        fprintf (stderr,"Could not allocate memory\n");
+        exit(1);
+    }
+    return t;
+}
