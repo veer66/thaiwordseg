@@ -548,7 +548,7 @@ wc_dict_iter_pos(WcDictIter *self,WcDictIterPos *pos)
 
 
 WC_STATUS 
-wc_dict_iter_pos_posid(WcDictIterPos *self,int index,wc_byte *id)
+wc_dict_iter_pos_posid(const WcDictIterPos *self,int index,wc_byte *id)
 {
   if (index < self->len)
     {
@@ -560,7 +560,7 @@ wc_dict_iter_pos_posid(WcDictIterPos *self,int index,wc_byte *id)
 
 
 const char* 
-wc_dict_iter_pos_posid2str(WcDictIterPos* self,wc_byte pos_id)
+wc_dict_iter_pos_posid2str(const WcDictIterPos* self,wc_byte pos_id)
 {
   WcDict *dict=self->dict;
   if (dict->pos_size <= pos_id) return NULL;

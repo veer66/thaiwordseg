@@ -12,7 +12,11 @@ main()
   const char *pos_str;
   int i=0,j,k;
   dict=wc_dict_new();
-  wc_dict_load(dict,"dict.etd");
+  if (wc_dict_load(dict,"../data/dict.etd")!=WC_RET_NORMAL)
+    {
+      fprintf(stderr,"Cound not load dictionary.\n");
+      exit(1);
+    }
   wc_dict_root(dict,&iter);
   i=0;
   while(iter.status!=WC_DICT_ITER_DEAD)
@@ -36,6 +40,7 @@ main()
 	    }
 	}
       i++;
+
     }
   wc_dict_delete(dict);
   return 0; 

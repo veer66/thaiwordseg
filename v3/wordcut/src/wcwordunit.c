@@ -233,10 +233,16 @@ wc_wordunit_map_break(WcWordunitMap *map,int start,int stop)
 }
 
 void
-wc_wordunit_map_delete(WcWordunitMap *self)
+wc_wordunit_map_destroy(WcWordunitMap *self)
 {
   free(self->break_tab);
   free(self->assoc_tab);
+}
+
+void
+wc_wordunit_map_delete(WcWordunitMap *self)
+{
+  wc_wordunit_map_destroy(self);
   free(self);
 }
 

@@ -1,5 +1,5 @@
 #include<wordcut/wcdictmap.h>
-
+/* #define DEBUG */
 
 typedef struct active_list_t
 {
@@ -41,10 +41,11 @@ static void
 active_list_update(ActiveList *self,char ch)
 {
   int i;
-
   /* transit */
   for(i=0;i<self->len;i++)
-    wc_dict_iter_transit(&(self->tok[i].iter),ch);
+    {
+      wc_dict_iter_transit(&(self->tok[i].iter),ch);
+    }
 
   /* delete dead node(s) */
   for(i=0;i<self->len;) 
@@ -72,8 +73,13 @@ wc_dict_get_map(WcDict *self,const char *str,size_t len)
 static void
 insert_map_tok(WcDictMap *self,ActiveList* list,int i)
 {
-  assert (self->len<=self->size);
 
+#ifdef DEBUG
+  printf ("Len=%d\tSize=%d\tstart=%d\n",
+	  self->len,self->size,list->tok[i].start);
+  
+#endif
+  assert (self->len<=self->size);
   /* resize if full */
   if (self->len==self->size)
     {
@@ -101,20 +107,36 @@ update_tab(WcDictMap* self,WcDict* dict,ActiveList* active_list)
 void
 wc_dict_map_init(WcDictMap *self,WcDict *dict,const char *str,size_t len)
 {
+  
   ActiveList active_list;
   int i;
 
+#ifdef DEBUG
+  printf ("DICT MAP STRLEN=%d\n",len);
+#endif
+  
   if (len==0) return;  
+  self->len=0;
+
+  self->size=len+len;
+  self->index=WC_NEW_N(int,len+1);
+  
+  self->tok=WC_NEW_N(WcDictMapTokPos,self->size);
+  
   active_list_init(&active_list,len);
+  
   for(i=0;i<len;i++)
-    {      
+    {            
+      self->index[i]=self->len;      
       active_list_insert(&active_list,i,dict);
       active_list_update(&active_list,str[i]);
-      update_tab(self,dict,&active_list);
-      /* mark index */
-      self->index[i]=self->len;
+      update_tab(self,dict,&active_list);      
     }
+  
+  self->index[len]=self->len;
   self->strlen=len;
+
+  
   active_list_destroy(&active_list);
 }
 
@@ -135,8 +157,11 @@ wc_dict_map_delete(WcDictMap *self)
 int
 wc_dict_map_assoc_len(WcDictMap *self,int stop)
 {
-  if (stop>=self->len) return WC_DICT_MAP_NULL;
-
+  if (stop>=self->strlen) return WC_DICT_MAP_NULL;
+#ifdef DEBUG
+  printf ("ASSOC_LEN\tstop=%d\tindex[stop+1]=%d\tindex[stop]=%d\n",
+	  stop,self->index[stop+1],self->index[stop]);
+#endif
   if (self->index[stop+1]>=self->index[stop])
     {
       return self->index[stop+1]-self->index[stop];
@@ -149,7 +174,7 @@ wc_dict_map_assoc_len(WcDictMap *self,int stop)
 int 
 wc_dict_map_assoc_at(WcDictMap *self,int stop,int offset)
 {
-  if (stop>=self->len || self->index[stop]+offset>=self->index[stop+1])
+  if (stop>=self->strlen || self->index[stop]+offset>=self->index[stop+1])
     return WC_DICT_MAP_NULL;
   return self->tok[((self->index[stop])+offset)].start;
 }
@@ -157,7 +182,7 @@ wc_dict_map_assoc_at(WcDictMap *self,int stop,int offset)
 const WcDictIterPos*
 wc_dict_map_assoc_pos_at(WcDictMap *self,int stop,int offset)
 {
-  if (stop>=self->len || self->index[stop]+offset>=self->index[stop+1])
+  if (stop>=self->strlen || self->index[stop]+offset>=self->index[stop+1])
     return NULL;
   return &self->tok[((self->index[stop])+offset)].pos;
 

@@ -7,23 +7,31 @@ main(int argc,char **argv)
   WcWordcut wordcut;
   WC_STATUS error;
   WcWordcutResult result;
-  gchar out[MAX_SIZE];
-  gchar *str;
-  gint n,i;
-  wc_wordcut_init(&wordcut,&error);
-  if (error==WC_RET_ERROR)
+  char out[MAX_SIZE];
+  char *str;
+  int n,i;
+  WcDict dict;
+  if (wc_dict_load(&dict,"../data/dict.etd")!=WC_RET_NORMAL)
     {
-      printf ("Initialize Wordcut Error.\n");
+      fprintf(stderr,"Cound not load dictionary.\n");
       exit(1);
     }
+
+  wc_wordcut_init_with_dict(&wordcut,&dict);
+
   str="µ“°≈¡º¡¬“«";
   n=1;
+
   wc_wordcut_cut(&wordcut,str,strlen(str),&result);
+  printf ("!!!\n");
+
   for (i=0;i<wc_wordcut_result_len(&result);i++)
-  {
-    wc_wordcut_result_surface_at(&result,i,out,MAX_SIZE);
-    printf ("Output=%s\n",out);
-  }
+    {
+      wc_wordcut_result_surface_at(&result,i,out,MAX_SIZE);
+      printf ("Output=%s\n",out);
+    }
+
   wc_wordcut_destroy(&wordcut);
+  wc_dict_destroy(&dict);
   return 0;
 }

@@ -20,5 +20,5 @@ void wc_wordunit_map_delete(WcWordunitMap *self);
 WcWordunitMap* wc_wordunit_find(const char* str,size_t len);
 WcWordunitMap* wc_wordunit_map_new(const char* str,size_t len);
 void wc_wordunit_map_init (WcWordunitMap *self,const char* str,size_t len);
-
+void wc_wordunit_map_destroy(WcWordunitMap *self);
 #endif
