@@ -1,5 +1,6 @@
 #include "ruby_wordcut.h"
 #include<wordcut/wcdict.h>
+#include<wordcut/wcdictmap.h>
 
 static VALUE cWcDict,rb_eWcDictError,cWcDictIter,
   cWcDictIterPos,cWcDictMap;
@@ -215,7 +216,7 @@ f_wc_dict_get_map(VALUE obj,VALUE str)
 static VALUE
 f_wc_dict_map_assoc(VALUE obj,VALUE v_stop)
 {
-  gint len,stop,i;
+  int len,stop,i;
   WcDictMap *map;
   Data_Get_Struct(obj,WcDictMap,map);
   stop=FIX2INT(v_stop);

@@ -1,6 +1,6 @@
 #include"ruby_wordcut.h"
 #include<wordcut/wcwordunit.h>
-#include<glib.h>
+
 static VALUE mWcWordunit,cWcWordunitMap,eWcWordunitMap;
 
 static void
@@ -25,8 +25,8 @@ static VALUE
 f_wc_wordunit_map_assoc(VALUE obj,VALUE stop_val)
 {
   WcWordunitMap *map;
-  gint stop;
-  gint start;
+  int stop;
+  int start;
   stop=FIX2INT(stop_val);
   Data_Get_Struct(obj,WcWordunitMap,map);
   start=wc_wordunit_map_assoc(map,stop);
@@ -36,8 +36,8 @@ f_wc_wordunit_map_assoc(VALUE obj,VALUE stop_val)
 static VALUE
 f_wc_wordunit_map_break(VALUE obj,VALUE v_start,VALUE v_stop)
 {
-  gint start=FIX2INT(v_start);
-  gint stop=FIX2INT(v_stop);
+  int start=FIX2INT(v_start);
+  int stop=FIX2INT(v_stop);
   WcWordunitMap *map;
   Data_Get_Struct(obj,WcWordunitMap,map);
   return (wc_wordunit_map_break(map,start,stop) ? Qtrue : Qfalse);

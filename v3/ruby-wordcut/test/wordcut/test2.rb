@@ -10,5 +10,5 @@ wc.cut("ตากลม").each do |sur,pos,type|
 	if pos != nil then
 	  	pos.each_str {|p| print "#{p} "}
 	end
-	print ">\t#{type}\n"
+	print ">\t#{type.chr}\n"
 end

@@ -27,11 +27,11 @@ f_wc_wordcut_cutline(VALUE obj,VALUE str)
   
   WcWordcut *self;
 
-  gchar *in,*buffer;
-  gint buffer_size;
+  char *in,*buffer;
+  int buffer_size;
   VALUE out;
-  gchar *delimiter="|";
-  gsize del_len=1;
+  char *delimiter="|";
+  size_t del_len=1;
 
   Data_Get_Struct(obj,WcWordcut,self);
 
@@ -40,7 +40,7 @@ f_wc_wordcut_cutline(VALUE obj,VALUE str)
     return rb_str_new2("");
   in=RSTRING(str)->ptr;
   buffer_size=RSTRING(str)->len*2;
-  buffer=ALLOC_N(gchar,buffer_size);
+  buffer=ALLOC_N(char,buffer_size);
   if(wc_wordcut_cutline(self,in,buffer,buffer_size,delimiter,del_len)==
      WC_RET_ERROR)     
       rb_raise(cWordcutError,"%s","Error in method cutline");    
@@ -66,7 +66,7 @@ f_wc_wordcut_cut(VALUE obj,VALUE str)
 {
   WcWordcut *self;
   WcWordcutResult *result;
-  result=g_new(WcWordcutResult,1);
+  result=WC_NEW(WcWordcutResult);
   Data_Get_Struct(obj,WcWordcut,self);
   wc_wordcut_cut(self,RSTRING(str)->ptr,RSTRING(str)->len,result);
   return Data_Wrap_Struct(cWordcutResult,0,free_wc_wordcut_result,result);  
@@ -77,12 +77,12 @@ f_wc_wordcut_result_each(VALUE obj)
 {
 #define MAXBUF  4096
   WcWordcutResult *self;
-  gchar buf[MAXBUF];
+  char buf[MAXBUF];
   const WcDictIterPos *pos;
   WcDictIterPos *pos2;
   WcWordType type;
 
-  gint i,len;
+  int i,len;
   Data_Get_Struct(obj,WcWordcutResult,self);
   len=wc_wordcut_result_len(self);
   if (len<0) 
