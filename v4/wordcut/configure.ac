@@ -24,7 +24,7 @@ AC_OUTPUT(
 	Makefile  \
 	wordcut/Makefile \
 	data/Makefile \
+  docs/Makefile \
 	wordcut/path.h \
-  example \
 	wordcut.pc
 )
