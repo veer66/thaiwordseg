@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<project name="Wordcut" default="bindist" basedir=".">
+    <property file="build.properties"/>
+    <description>Make Wordcut with Ant</description>
+
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+    <property name="dist"  location="dist"/>
+
+    <target name="init">
+        <tstamp/>
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="compile" depends="init" description="compile the source ">
+        <javac srcdir="${src}" destdir="${build}"/>
+    </target>
+
+    <target name="bindist" depends="compile" description="generate the distribution"> 
+        <mkdir dir="${dist}"/>
+        <jar jarfile="${dist}/Wordcut-${version}.${DSTAMP}.jar" 
+            manifest="src/th/ac/ku/cpe/naist/wordcut/wordcut.manifest"
+            basedir="${build}"/>
+    </target>
+
+    <target name="srcdist" 
+        depends="init"
+        description="pack source codes">
+        <copy todir="temp/Wordcut-src-${version}">
+            <fileset dir="${basedir}"/>
+        </copy>
+        <delete dir="temp/Wordcut-src-${version}/dist"/>
+        <mkdir dir="${dist}"/>
+        <tar destfile="${dist}/Wordcut-src-${version}.tar.gz"            
+            basedir="temp" 
+            compression="gzip"/>
+        <delete dir="temp"/>
+    </target>
+
+    <target name="clean" description="clean up">
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+    </target>
+</project>
