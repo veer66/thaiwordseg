@@ -1,6 +1,6 @@
 Summary: Ruby/Wordcut is a Ruby interface to the Wordcut
 Name: ruby-wordcut
-Version: 0.1.2
+Version: 0.1.3
 Release: 1
 License: GPL
 Group: Applications/Ruby
