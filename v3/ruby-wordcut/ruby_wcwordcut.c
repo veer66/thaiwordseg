@@ -52,11 +52,13 @@ f_wc_wordcut_cutline(VALUE obj,VALUE str)
 static void
 free_wc_wordcut_result(WcWordcutResult *self)
 {
+
   if(self!=NULL)
     {
       wc_wordcut_result_destroy(self);
-      free(self);
+      free(self); 
     }
+
 }
 
 static VALUE
@@ -64,7 +66,7 @@ f_wc_wordcut_cut(VALUE obj,VALUE str)
 {
   WcWordcut *self;
   WcWordcutResult *result;
-  result=ALLOC(WcWordcutResult);
+  result=g_new(WcWordcutResult,1);
   Data_Get_Struct(obj,WcWordcut,self);
   wc_wordcut_cut(self,RSTRING(str)->ptr,RSTRING(str)->len,result);
   return Data_Wrap_Struct(cWordcutResult,0,free_wc_wordcut_result,result);  
@@ -77,28 +79,34 @@ f_wc_wordcut_result_each(VALUE obj)
   WcWordcutResult *self;
   gchar buf[MAXBUF];
   const WcDictIterPos *pos;
+  WcDictIterPos *pos2;
   WcWordType type;
 
   gint i,len;
   Data_Get_Struct(obj,WcWordcutResult,self);
   len=wc_wordcut_result_len(self);
   if (len<0) 
-    rb_raise(cWordcutError,"%s","Invalid wordcut result length\n");
+    rb_raise(cWordcutError,"%s","Invalid wordcut result length.\n");
+  
   for(i=0;i<len;i++)
     {
+      /*      printf ("I=%d Len=%d\n",i,len);*/
       if(wc_wordcut_result_surface_at(self,i,buf,MAXBUF)==WC_RET_ERROR)
 	{
-	  rb_raise(cWordcutError,"%s","Error taking surface of word from result");
+	  rb_raise(cWordcutError,"%s","Error taking surface of word from result.");
 	}
       pos=wc_wordcut_result_pos_at(self,i);
       type=wc_wordcut_result_type_at(self,i);
+
       rb_yield(rb_ary_new3(3,
 			   rb_str_new2(buf),
 			   (pos==NULL ? Qnil : 
-			    Data_Wrap_Struct(ruby_wc_dict_iter_pos(),0,0,
-					     (WcDictIterPos*)pos)),
+			    Data_Wrap_Struct(ruby_wc_dict_iter_pos(),
+					     0,0,(WcDictIterPos *)pos)),
 			   INT2FIX(type)));	       
+
     }
+      
   return obj;
 }
 

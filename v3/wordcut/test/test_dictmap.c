@@ -6,9 +6,12 @@ int main()
 	WcDict dict;
 	WcDictMap map;
 	WcDictIterPos *pos;
+
 	gint len=strlen(str),i,j,k,alen;
+
 	wc_dict_init(&dict);
-	wc_dict_load(&dict,DICT_FILENAME);
+	printf ("!!!\n");
+	wc_dict_load(&dict,"dict.etd");
 	wc_dict_map_init(&map,&dict,str,len);
 	printf ("%s\n",str);
 	for(i=0;i<len;i++) {

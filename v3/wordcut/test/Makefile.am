@@ -16,3 +16,5 @@ test_dictmap_LDADD=$(top_builddir)/src/libwordcut.la
 test_wordcut_SOURCES=test_wordcut.c
 test_wordcut_LDFLAG=`pkg-config glib-2.0 --libs`
 test_wordcut_LDADD=$(top_builddir)/src/libwordcut.la
+
+EXTRA_DIST=dict.etd

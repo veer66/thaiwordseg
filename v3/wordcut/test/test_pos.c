@@ -12,7 +12,7 @@ main()
   const char *pos_str;
   int i=0,j,k;
   dict=wc_dict_new();
-  wc_dict_load(dict,DICT_FILENAME);
+  wc_dict_load(dict,"dict.etd");
   wc_dict_root(dict,&iter);
   i=0;
   while(iter.status!=WC_DICT_ITER_DEAD)

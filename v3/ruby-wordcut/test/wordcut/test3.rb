@@ -5,7 +5,7 @@ wc=Wordcut::Wordcut.new
 #wc.cut("ตากลม") 
 #.each { |sur,pos,type| print "!!!!!!!!!!!\n" }
 
-wc.cut("ตากลม").each do |sur,pos,type| 
+wc.cut(ARGV[0]).each do |sur,pos,type| 
 	print "Surface=#{sur}\t< "
 	if pos != nil then
 	  	pos.each_str {|p| print "#{p} "}

@@ -397,31 +397,6 @@ wc_wordcut_result_str(WcWordcutResult* self , gchar *out , gsize out_size   ,
   return l;
 }
 
-/*
-static void
-gen_idx_re(WcWordcutTableElement *tab,gsize len,
-	   gint **idx,gint *n,gint** rev)
-{
-  gint c=0,i,start;
-  *idx=g_new(gint,len);
-  *rev=g_new(gint,len);
-  
-  
-  for(i=0;i<len;i++) (*rev)[i]=(-1);
-  
-  for(i=len-1;i>=0;i=start-1)
-    {
-      
-      start=tab[i].start;
-      
-      (*idx)[c]=i;
-       (*rev)[start]=i; 
-      c++;
-    }
-  (*n)=c;  
-}
-*/
-
 void
 wc_wordcut_cut(WcWordcut *self,const gchar* str,gint len,WcWordcutResult *result)
 {
@@ -429,31 +404,25 @@ wc_wordcut_cut(WcWordcut *self,const gchar* str,gint len,WcWordcutResult *result
   WcWordcutTableElement *tab;
   WcDictMap dict_map;
   WcWordunitMap wu_map;
-
-
-  tab=g_new(WcWordcutTableElement,len);
-
   wc_wordunit_map_init(&wu_map,str,len);
-  
   wc_dict_map_init(&dict_map,self->dict,str,len);
   
+  result->tab=g_new(WcWordcutTableElement,len);
+
   for(i=0;i<len;i++)
     {
-      select_path(&dict_map,&wu_map,str[i],tab,i);
+      select_path(&dict_map,&wu_map,str[i],result->tab,i);
     }
 
-  
-  result->tab=tab;
-   
   result->len=len;
-  
   result->str=g_strdup(str);
-  /* join_unk(result); */
-  i=result->len;
+
+  i=result->len-1;
   c=0;
  
   result->index   = g_new(gint,len);
   result->reverse = g_new(gint,len);
+  
   while(i>=0)
     {
       start=result->tab[i].start;
@@ -461,17 +430,19 @@ wc_wordcut_cut(WcWordcut *self,const gchar* str,gint len,WcWordcutResult *result
       result->reverse[start]=i;
       i=start-1;
       c++;
+
     }
   result->n=c;
+  join_unk(result);
 }
 
 void
 wc_wordcut_result_destroy(WcWordcutResult *self)
 {
-  /* free(self->tab);
-     free(self->str);*/
-  /* free(self->index);
-     free(self->reverse);*/
+  free(self->tab);
+  free(self->str);
+  free(self->index);
+  free(self->reverse);
 }
 
 void 
@@ -616,37 +587,3 @@ wc_wordcut_result_type_at(WcWordcutResult *self,gint p)
   assert(i<self->n);
   return self->tab[self->index[i]].type;
 }
-
-/*
-int 
-main(int argc,char **argv)
-{
-#define MAX_SIZE 1024
-  WcWordcut wordcut;
-  WC_STATUS error;
-  WcWordcutResult result;
-  gchar out[MAX_SIZE];
-  gchar *str;
-  gint n;
-  if (argc!=3) 
-    {
-      printf ("Invalid argument.!\n");
-      exit(1);
-    }
-
-  wc_wordcut_init(&wordcut,&error);
-  if (error==WC_RET_ERROR)
-    {
-      printf ("Initialize Wordcut Error.\n");
-      exit(1);
-    }
-  str=argv[1];
-  n=atoi(argv[2]);
-  wc_wordcut_cut(&wordcut,str,strlen(str),&result);
-  printf ("Len=%d\n",wc_wordcut_result_len(&result));
-  wc_wordcut_result_surface_at(&result,n,out,MAX_SIZE);
-  printf ("Out = %s\n",out);
-  wc_wordcut_destroy(&wordcut);
-  return 0;
-}*/
-
