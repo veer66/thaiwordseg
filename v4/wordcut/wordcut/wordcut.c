@@ -222,7 +222,7 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
     size_t graph_size=len+len;
     int *idx,*graph,gcount,c,*chunk_tab,*chunk_graph;
     PathInfo *path;
-    int single_lead;
+    int single_lead,offset;
 
     if (len > DEFAULT_GRAPH_SIZE) {
         graph_size=len+len;
@@ -319,23 +319,27 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
 
     single_lead = 0;
     
-    for(c=0,j=0;j!=len;j=i,c++) {
-        int offset=i-j;
+    for(c=0,j=0;j!=len;j=i) {
+        i=path[j].link;
+        offset=i-j;
+
+        
         if (offset==1) {
             if (c==0) {
                 single_lead=1;
-            
             } else {
-                result->offset[c]++;
+                /* auto merge */
+                result->offset[c-1]++;
             }
         } else {
-            i=path[j].link;
+
             result->start[c]=j;
             result->offset[c]=i-j;
             
             if (c==2 && single_lead) {
                 result->start[c]--;
             }
+            c++;
         }
     }
     result->count=c;
