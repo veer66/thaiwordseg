@@ -1,6 +1,6 @@
 wordcutincludedir=$(includedir)/wordcut
 wordcutinclude_HEADERS= wccommon.h wcdict.h wcstring.h wcwordunit.h \
-	wcsplit.h wcwordcut.h wcpath.h
+	wcsplit.h wcwordcut.h wcpath.h wcdictmap.h
 
 show : wordcut.dvi
 	xdvi $<

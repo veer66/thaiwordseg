@@ -51,8 +51,8 @@ typedef struct wc_dict_iter_pos
 } WcDictIterPos;
 
 void wc_dict_iter_pos(WcDictIter *self,WcDictIterPos *pos);
-const char* wc_dict_iter_pos_posid2str(WcDictIterPos* self,wc_byte pos_id);
-WC_STATUS wc_dict_iter_pos_posid(WcDictIterPos *self,int index,wc_byte *id);
+const char* wc_dict_iter_pos_posid2str(const WcDictIterPos* self,wc_byte pos_id);
+WC_STATUS wc_dict_iter_pos_posid(const WcDictIterPos *self,int index,wc_byte *id);
 
 
 #endif
