@@ -6,14 +6,26 @@
 #include <string.h>
 #define PACKAGE       "wordcut"
 
+#if __STDC__
+# define VOID void
+#else
+# define VOID char
+#endif
+
+#if defined (__STDC__) && __STDC__
+VOID *xmalloc (size_t n);
+VOID *xcalloc (size_t n, size_t s);
+VOID *xrealloc (VOID *p, size_t n);
+char *xstrdup (char *p);
+#endif
+
 
 #define MEMCHK(mem) if( (mem) == NULL ) { fprintf(stderr,"%s:%d: Out of memory.\n",__FILE__,__LINE__); exit(1); }
 
-/*  #define WC_NEW_N(type,size) MEMCHK(((type) *)malloc(sizeof((type) *)*(size))) */
 
-/* #define WC_NEW_N(type,size)((type)*)malloc(sizeof((type)*)*(size))  */
-#define WC_NEW_N(type,size) (type*)malloc(sizeof(type)*(size))
-#define WC_NEW(type)(type*)malloc(sizeof(type)) 
+#define WC_NEW_N(type,size) (type*)xmalloc(sizeof(type)*(size))
+#define WC_NEW(type)(type*)xmalloc(sizeof(type)) 
+#define WC_RENEW(type,data,size)(type *)xrealloc(data,sizeof(type)*size);
 
 typedef int wc_boolean;
 

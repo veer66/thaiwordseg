@@ -7,5 +7,5 @@ Name: @PACKAGE@
 Description: Thai Word Segmentation Utility
 Version: @VERSION@
 Requires: 
-Libs: -L${libdir} -l@PACKAGE@ @GLIB2_LIBS@
-Cflags: -I${includedir} @GLIB2_CFLAGS@
+Libs: -L${libdir} -l@PACKAGE@ 
+Cflags: -I${includedir} 

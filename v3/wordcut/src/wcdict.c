@@ -4,6 +4,8 @@
 
 /* #define WC_DEBUG */
 
+
+
 #ifdef DEBUG
 static void
 dump_iterator_info(WcDictIter *self)
@@ -343,6 +345,8 @@ bin_search(wc_uchar *tab,size_t start,size_t len,wc_uchar ch)
   l=0;
   r=len-1;
   found=WC_FALSE;
+  if (len<=0) return -1;
+  m=0;
   while(l<=r && l>=0 && r<len)
     {
       m=((l+r)>>1);

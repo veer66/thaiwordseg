@@ -28,9 +28,9 @@ char_coder_init(CharCoder* self)
 size_t
 char_coder_char_id(CharCoder* self,char ch,wc_boolean* found)
 {
-  size_t i,ans;
+  size_t i,ans=0;
   *found=WC_FALSE;
-  for (i=0;i<self->length && !(*found);i++) 
+   for (i=0;i<self->length && !(*found);i++) 
     {
       if(self->array[i]==ch) 
 	{

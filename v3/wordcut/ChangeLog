@@ -17,3 +17,6 @@
 	  Less number means higher priority.
 
 	* Array Thai/English split.
+
+2003-02-09 Vee Satayamas <virasj@user.sourceforge.net>
+	* remove dependency to glib

@@ -1,7 +1,8 @@
 #ifndef __WC_DICT_H__
 #define __WC_DICT_H__
 #include <wordcut/wccommon.h>
-typedef struct wc_dict_t {
+
+typedef struct {
   char **pos;
   wc_uint32 pos_size,root,size;
   wc_uchar *tab;
@@ -53,23 +54,8 @@ void wc_dict_iter_pos(WcDictIter *self,WcDictIterPos *pos);
 const char* wc_dict_iter_pos_posid2str(WcDictIterPos* self,wc_byte pos_id);
 WC_STATUS wc_dict_iter_pos_posid(WcDictIterPos *self,int index,wc_byte *id);
 
-#define WC_DICT_MAP_NULL -1
-/*
-typedef struct wc_dict_map 
-{
-  int* index;
-  GArray *assoc_tab;
-  gsize len;
-} WcDictMap;
 
 
-void wc_dict_map_init(WcDictMap *self,WcDict *dict,const gchar *str,gsize len);
-void wc_dict_map_destroy(WcDictMap *self);
-void wc_dict_map_delete(WcDictMap *self);
-gint wc_dict_map_assoc_len(WcDictMap *self,gint stop);
-gint wc_dict_map_assoc_at(WcDictMap *self,gint stop,gint offset);
-WcDictMap* wc_dict_map_new(WcDict *dict,const gchar *str,gsize len);
-WcDictMap* wc_dict_get_map(WcDict *self,const gchar *str,gsize len);
-const WcDictIterPos* wc_dict_map_assoc_pos_at(WcDictMap *self,gint stop,gint offset);
-*/
+
+
 #endif
