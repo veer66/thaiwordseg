@@ -75,10 +75,11 @@ VERSION = @VERSION@
 am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
+CFLAGS = -g -Wall
 bin_PROGRAMS = wiencode widecode wiwordcut
 wiencode_SOURCES = encode.c
 widecode_SOURCES = decode.c
-wiwordcut_SOURCES = wordcut.c
+wiwordcut_SOURCES = wiwordcut.c wiwordcutcli.c
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -96,7 +97,7 @@ wiencode_OBJECTS = $(am_wiencode_OBJECTS)
 wiencode_LDADD = $(LDADD)
 wiencode_DEPENDENCIES =
 wiencode_LDFLAGS =
-am_wiwordcut_OBJECTS = wordcut.$(OBJEXT)
+am_wiwordcut_OBJECTS = wiwordcut.$(OBJEXT) wiwordcutcli.$(OBJEXT)
 wiwordcut_OBJECTS = $(am_wiwordcut_OBJECTS)
 wiwordcut_LDADD = $(LDADD)
 wiwordcut_DEPENDENCIES =
@@ -110,12 +111,12 @@ LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/decode.Po ./$(DEPDIR)/encode.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/wordcut.Po
+@AMDEP_TRUE@	./$(DEPDIR)/wiwordcut.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/wiwordcutcli.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-CFLAGS = @CFLAGS@
 DIST_SOURCES = $(widecode_SOURCES) $(wiencode_SOURCES) \
 	$(wiwordcut_SOURCES)
 DIST_COMMON = README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
@@ -185,7 +186,8 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/encode.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wordcut.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wiwordcut.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wiwordcutcli.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)
