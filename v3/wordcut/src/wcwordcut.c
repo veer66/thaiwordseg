@@ -7,15 +7,13 @@ join_front(WcWordcutResult* result,
 	   int front_start)
 {
   
-#ifdef DEBUG3
-  printf ("Stop=%d\tFront start=%d\n",stop,front_start);
-#endif
-  /*
+
+
+
   result->tab[stop].start=front_start;
   result->tab[stop].type=WC_WORD_TYPE_JOIN;
   result->tab[stop].pos=NULL;
   result->reverse[front_start]=stop;
-  */
 }
 
 static void
@@ -23,36 +21,34 @@ join_back(WcWordcutResult* result,
 	  int start,
 	  int back_stop)
 {
-  
-#ifdef DEBUG3
-  printf ("Start=%d\tBack stop=%d\n",start,back_stop);
-#endif
+
+
+
   result->tab[back_stop].start=start;
   result->tab[back_stop].type=WC_WORD_TYPE_JOIN;
   result->tab[back_stop].pos=NULL;
   result->reverse[start]=back_stop;
-  
 }
 
 static void
 join_unk(WcWordcutResult *result)
 {
   int i,c;
+  if (result->len<=1) return ;
   for(i=0;i<result->n;i++)
     {
       int stop=result->index[i];
       int start=result->tab[stop].start;
       int len=stop-start+1;
       int front_len,back_len,front_start,front_stop,back_start,back_stop;
+      
+
       if (len==1 && result->str[start]!='.')
 	{
-	  if (start==0) 
+	  if (start==0)
 	    {
-	      back_stop=stop+1;
-	      /* TODO */
-	      /* back_start=result->reverse[front_start]; */
-
-	      //   join_back(result,start,back_stop);
+	      back_stop=result->reverse[stop+1];
+	      join_back(result,start,back_stop); 
 	    }
 	  else if (stop==result->len-1)
 	    {
@@ -66,20 +62,14 @@ join_unk(WcWordcutResult *result)
 	      front_start=result->tab[front_stop].start;
 	      front_len=front_stop-front_start+1;
 
-	      back_stop=stop+1;
-	      back_start=result->reverse[front_start];
+
+	      back_start=stop+1;
+	      back_stop=result->reverse[back_start];
 	      back_len=back_stop-back_start+1;
-#ifdef DEBUG3
-	      printf ("XXX back_start=%d\tback_stop=%d\n",
-		      back_start,back_stop);
-	      printf ("YYY front_start=%d\tfront_stop=%d\n",
-		      front_start,front_stop);
-		      
-#endif 
 
 	      if(back_len<front_len)
 		{
-		  	  join_back(result,start,back_stop);
+		  join_back(result,start,back_stop);
 		}
 	      else
 		{

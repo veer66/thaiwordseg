@@ -20,3 +20,6 @@
 
 2003-02-09 Vee Satayamas <virasj@user.sourceforge.net>
 	* remove dependency to glib
+
+2003-03-02 Vee Satayamas <virasj@user.sourceoforge.net>
+	* add partial manual in latex format in the directory "manual"
