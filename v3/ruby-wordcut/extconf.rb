@@ -25,8 +25,8 @@ module PkgConfig
       @libs = pipe.gets.chomp
       pipe.close
       
-      $CFLAGS=$CFLAGS+@cflags
-      $LDFLAGS=$LDFLAGS+@libs
+      $CFLAGS=$CFLAGS+" "+@cflags
+      $LDFLAGS=$LDFLAGS+" "+@libs
     else
       print "no\n"
       exit

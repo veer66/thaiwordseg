@@ -51,6 +51,7 @@ lxpa_input(const gchar* filename)
 void 
 lxpa_destroy(char *txt)
 {
+	if (yyin!=stdin) fclose(yyin);
 }
 
 

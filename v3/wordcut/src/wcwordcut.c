@@ -401,7 +401,6 @@ void
 wc_wordcut_cut(WcWordcut *self,const gchar* str,gint len,WcWordcutResult *result)
 {
   gint i,start,c;
-  WcWordcutTableElement *tab;
   WcDictMap dict_map;
   WcWordunitMap wu_map;
   wc_wordunit_map_init(&wu_map,str,len);
@@ -409,31 +408,45 @@ wc_wordcut_cut(WcWordcut *self,const gchar* str,gint len,WcWordcutResult *result
   
   result->tab=g_new(WcWordcutTableElement,len);
 
-  for(i=0;i<len;i++)
+  if (len > 1)
     {
-      select_path(&dict_map,&wu_map,str[i],result->tab,i);
-    }
+      for(i=0;i<len;i++)
+	{
+	  select_path(&dict_map,&wu_map,str[i],result->tab,i);
+	}
 
-  result->len=len;
-  result->str=g_strdup(str);
+      result->len=len;
+      result->str=g_strdup(str);
 
-  i=result->len-1;
-  c=0;
+      i=result->len-1;
+      c=0;
  
-  result->index   = g_new(gint,len);
-  result->reverse = g_new(gint,len);
+      result->index   = g_new(gint,len);
+      result->reverse = g_new(gint,len);
   
-  while(i>=0)
-    {
-      start=result->tab[i].start;
-      result->index[c]=i;
-      result->reverse[start]=i;
-      i=start-1;
-      c++;
+      while(i>=0)
+	{
+	  start=result->tab[i].start;
+	  result->index[c]=i;
+	  result->reverse[start]=i;
+	  i=start-1;
+	  c++;
 
+	}
+      result->n=c;
+      join_unk(result);
+    } 
+  else
+    {
+      result->n=1;
+      result->index=g_new(gint,1);
+      result->index[0]=1;
+      result->reverse=g_new(gint,1);
+      result->tab=g_new(WcWordcutTableElement,1);
+      result->tab->start=1;
+      result->tab->type=WC_WORD_TYPE_UNK;
+      result->str=g_strdup(str);
     }
-  result->n=c;
-  join_unk(result);
 }
 
 void

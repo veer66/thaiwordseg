@@ -1,9 +1,6 @@
 #include "bigrams.h"
 
 
-#define THOLD   3
-
-
 struct cal_data_t
 {
   BiGrams *bi;
@@ -37,7 +34,7 @@ thai_cb(const gchar* str,gsize len,gpointer data)
       WC_STATUS ret;
       ret=wc_wordcut_result_surface_at(&result,i,word,len+2);
       bi_grams_add(bi,word,strlen(word));
-      g_assert(ret!=WC_RET_ERROR);
+      //g_assert(ret!=WC_RET_ERROR);
     }
   g_free(word);
 
