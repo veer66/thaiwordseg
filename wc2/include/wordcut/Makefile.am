@@ -1,2 +1,2 @@
 wordcutincludedir=$(includedir)/wordcut
-wordcutinclude_HEADERS= wccommon.h
+wordcutinclude_HEADERS= wccommon.h wcdict.h
