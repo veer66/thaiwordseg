@@ -76,10 +76,10 @@ PACKAGE = wordcut
 PKG_CONFIG = /home/vee/usr/bin/pkg-config
 RANLIB = ranlib
 STRIP = strip
-VERSION = 0.1.1
+VERSION = 0.1.1pre2
 
 wordcutincludedir = $(includedir)/wordcut
-wordcutinclude_HEADERS = wccommon.h wcdict.h wcstring.h wcwordunit.h 	wcsplit.h
+wordcutinclude_HEADERS = wccommon.h wcdict.h wcstring.h wcwordunit.h 	wcsplit.h wcwordcut.h wcpath.h
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES =  wcpath.h

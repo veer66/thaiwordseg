@@ -2,6 +2,104 @@
 #include <assert.h>
 
 
+
+static void
+join_front(WcWordcutResult* result,
+	   gint stop,
+	   gint front_start)
+{
+#ifdef DEBUG3
+  printf ("Stop=%d\tFront start=%d\n",stop,front_start);
+#endif
+  result->tab[stop].start=front_start;
+  result->tab[stop].type=WC_WORD_TYPE_JOIN;
+  result->tab[stop].pos=NULL;
+  result->reverse[front_start]=stop;
+}
+
+static void
+join_back(WcWordcutResult* result,
+	  gint start,
+	  gint back_stop)
+{
+#ifdef DEBUG3
+  printf ("Start=%d\tBack stop=%d\n",start,back_stop);
+#endif
+  result->tab[back_stop].start=start;
+  result->tab[back_stop].type=WC_WORD_TYPE_JOIN;
+  result->tab[back_stop].pos=NULL;
+  result->reverse[start]=back_stop;
+}
+
+static void
+join_unk(WcWordcutResult *result)
+{
+  gint i,c;
+  for(i=0;i<result->n;i++)
+    {
+      gint stop=result->index[i];
+      gint start=result->tab[stop].start;
+      gint len=stop-start+1;
+      gint front_len,back_len,front_start,front_stop,back_start,back_stop;
+      if (len==1 && result->str[start]!='.')
+	{
+	  if (start==0) 
+	    {
+	      back_stop=stop+1;
+	      back_start=result->reverse[front_start];
+
+	      join_back(result,start,back_stop);
+	    }
+	  else if (stop==result->len-1)
+	    {
+	      front_stop=start-1;
+	      front_start=result->tab[front_stop].start;
+	      join_front(result,stop,front_start);
+	    }
+	  else
+	    {	      
+	      front_stop=start-1;
+	      front_start=result->tab[front_stop].start;
+	      front_len=front_stop-front_start+1;
+
+	      back_stop=stop+1;
+	      back_start=result->reverse[front_start];
+	      back_len=back_stop-back_start+1;
+#ifdef DEBUG3
+	      printf ("XXX back_start=%d\tback_stop=%d\n",
+		      back_start,back_stop);
+	      printf ("YYY front_start=%d\tfront_stop=%d\n",
+		      front_start,front_stop);
+		      
+#endif 
+
+	      if(back_len<front_len)
+		{
+		  join_back(result,start,back_stop);
+		}
+	      else
+		{
+		  join_front(result,stop,front_start);
+		}	      
+	    }
+	}
+    }
+  i=result->len-1;
+  c=0;
+  while(i>=0)
+    {
+      gint start;
+      start=result->tab[i].start;
+#ifdef DEBUG3
+      printf ("-->start=%d\ti=%d\n",start,i);
+#endif
+
+      result->index[c++]=i;
+      i=start-1;
+    }
+  result->n=c;
+}
+
 static gint 
 element_cmp(WcWordcutTableElement *a,
 	    WcWordcutTableElement *b)
@@ -68,6 +166,17 @@ set_element(WcWordcutTableElement* tab,WcWordcutTableElement* target,
     }
 }
 
+
+#ifdef DEBUG2
+static void
+dump_element(WcWordcutTableElement *tab)
+{
+  printf ("start=%d break=%d unk=%d wordunit=%d dict=%d\n",
+	  tab->start,tab->brk_c,tab->unk_ch_c,tab->wu_c,tab->dict_c);
+}
+#endif
+
+
 static void 
 select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
 	    gchar ch,WcWordcutTableElement* tab,gint n)
@@ -89,6 +198,12 @@ select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
 	  selected.pos=NULL;
 	  selected.type=WC_WORD_TYPE_WORDUNIT;
 	  selected.start=start;
+#ifdef DEBUG2
+	  printf ("Select\tCanidate\n");
+	  dump_element(&selected);
+	  dump_element(&canidate);
+	  printf ("%s: n=%d\tType = %c\n",__FILE__,n,selected.type);
+#endif
 	}
     }
   
@@ -107,6 +222,16 @@ select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
 	  selected=canidate;
 	  selected.type=WC_WORD_TYPE_DICT;
  	  selected.pos=wc_dict_map_assoc_pos_at(dict_map,n,i);
+
+	  /* test */
+#ifdef DEBUG2
+	  printf ("Select\tCanidate\n");
+	  dump_element(&selected);
+	  dump_element(&canidate);
+	  printf ("%s: n=%d\tType=%c\tPos len = %d\n",
+		  __FILE__,n,selected.type,selected.pos->len);
+
+#endif
 	  assert(selected.pos!=NULL);
 	  selected.start=start;
 	}
@@ -121,10 +246,21 @@ select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
       selected.type=WC_WORD_TYPE_UNK;
       selected.pos=NULL;
       selected.start=n;
+#ifdef DEBUG2
+      printf ("Select\tCanidate\n");
+      dump_element(&selected);
+      dump_element(&canidate);
+      printf ("%s: n=%d\tType = %c\n",__FILE__,n,selected.type);
+#endif
     }
-
   tab[n]=selected;
+#ifdef DEBUG2
+  printf ("N=%d\tTab[n] type=%c ",n,tab[n].type);
+  dump_element(&tab[n]);
+#endif
+
 }
+
 
 #ifdef DEBUG
 static void
@@ -141,6 +277,7 @@ dump_tab(WcWordcutTableElement *tab,gsize len)
 }
 #endif
 
+#ifdef DEBUG
 static WC_STATUS
 tab2str(WcWordcutTableElement *tab,
 	const gchar *src,gsize len,
@@ -154,9 +291,9 @@ tab2str(WcWordcutTableElement *tab,
   index=g_new(gint,len);
   i=len-1;
   n=0;
-#ifdef DEBUG
+
   printf ("!!!1\n");
-#endif
+
   while (i>=0)
     {
       start=tab[i].start;
@@ -164,19 +301,19 @@ tab2str(WcWordcutTableElement *tab,
       n++;
       i=start-1;
     }
-#ifdef DEBUG
+
   printf ("!!!2\n");
-#endif
+
   if (n<=0) return WC_RET_ERROR;
   if (dimlen*(n-1)+len+1>=outlen) return WC_RET_ERROR;
-#ifdef DEBUG
+
   printf ("!!! n=%d\n",n);
-#endif
+
   for(i=n-1;i>=0;i--)
     {
-#ifdef DEBUG
+
       printf ("!!!3 start=%d stop=%d\n",tab[index[i]].start,index[i]);
-#endif      
+
       if (first)
 	{
 	  first=FALSE;
@@ -199,7 +336,9 @@ tab2str(WcWordcutTableElement *tab,
   free(index);
   return WC_RET_NORMAL;
 }
+#endif      
 
+#ifdef DEBUG
 static void
 dump_result(WcWordcutResult *self)
 {
@@ -219,7 +358,7 @@ dump_result(WcWordcutResult *self)
     }
   printf ("\n");
 }
-
+#endif
 gint
 wc_wordcut_result_str(WcWordcutResult* self , gchar *out , gsize out_size   ,
 		      const gchar *delimiter,gsize del_len)
@@ -258,59 +397,81 @@ wc_wordcut_result_str(WcWordcutResult* self , gchar *out , gsize out_size   ,
   return l;
 }
 
+/*
 static void
-genidx(WcWordcutTableElement *tab,gsize len,gint **idx,gint *n)
+gen_idx_re(WcWordcutTableElement *tab,gsize len,
+	   gint **idx,gint *n,gint** rev)
 {
   gint c=0,i,start;
   *idx=g_new(gint,len);
+  *rev=g_new(gint,len);
+  
+  
+  for(i=0;i<len;i++) (*rev)[i]=(-1);
+  
   for(i=len-1;i>=0;i=start-1)
     {
+      
       start=tab[i].start;
-#ifdef DEBUG
-      printf ("!!! START=%d i=%d\n",start,i);
-#endif
+      
       (*idx)[c]=i;
+       (*rev)[start]=i; 
       c++;
     }
-  *n=c;
+  (*n)=c;  
 }
+*/
 
 void
 wc_wordcut_cut(WcWordcut *self,const gchar* str,gint len,WcWordcutResult *result)
 {
-  gint i;
+  gint i,start,c;
   WcWordcutTableElement *tab;
   WcDictMap dict_map;
   WcWordunitMap wu_map;
-  
-#ifdef DEBUG
-  #define MAXLEN 1024
-  gchar out[MAXLEN];
-#endif
+
 
   tab=g_new(WcWordcutTableElement,len);
+
   wc_wordunit_map_init(&wu_map,str,len);
+  
   wc_dict_map_init(&dict_map,self->dict,str,len);
+  
   for(i=0;i<len;i++)
     {
       select_path(&dict_map,&wu_map,str[i],tab,i);
     }
-#ifdef DEBUG
-  dump_tab(tab,len);
-  tab2str(tab,str,len,out,MAXLEN,"|",1);
-  printf ("Output = %s\n",out);
-#endif
+
+  
   result->tab=tab;
+   
   result->len=len;
+  
   result->str=g_strdup(str);
-  genidx(tab,len,&result->index,&result->n);
+  /* join_unk(result); */
+  i=result->len;
+  c=0;
+ 
+  result->index   = g_new(gint,len);
+  result->reverse = g_new(gint,len);
+  while(i>=0)
+    {
+      start=result->tab[i].start;
+      result->index[c]=i;
+      result->reverse[start]=i;
+      i=start-1;
+      c++;
+    }
+  result->n=c;
 }
 
 void
 wc_wordcut_result_destroy(WcWordcutResult *self)
 {
-  free(self->tab);
-  free(self->str);
+  /* free(self->tab);
+     free(self->str);*/
+  /* free(self->index);
+     free(self->reverse);*/
 }
 
 void 
@@ -432,7 +593,9 @@ wc_wordcut_result_surface_at(WcWordcutResult *self,gint p,gchar *out,gsize maxsi
   start=self->tab[stop].start;
   if (maxsize-1 <= stop-start+1)
     return WC_RET_ERROR;
+#ifdef DEBUG
   printf ("Start=%d Stop=%d i=%d\n",start,stop,i);
+#endif
   for(j=start;j<=stop;j++) *out++ = self->str[j];
   *out='\0';
   return WC_RET_NORMAL;
@@ -443,7 +606,7 @@ wc_wordcut_result_pos_at(WcWordcutResult *self,gint p)
 {
   gint i=self->n-p-1;
   assert(i<self->n);
-  return self->tab[i].pos;
+  return self->tab[self->index[i]].pos;
 }
 
 WcWordType
@@ -451,8 +614,9 @@ wc_wordcut_result_type_at(WcWordcutResult *self,gint p)
 {
   gint i=self->n-p-1;
   assert(i<self->n);
-  return self->tab[i].type;
+  return self->tab[self->index[i]].type;
 }
+
 /*
 int 
 main(int argc,char **argv)

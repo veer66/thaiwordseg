@@ -10,6 +10,7 @@
 #define WC_WORD_TYPE_UNK      'U'
 #define WC_WORD_TYPE_DICT     'D'
 #define WC_WORD_TYPE_WORDUNIT 'W'
+#define WC_WORD_TYPE_JOIN     'J'
 
 typedef gint WcWordType;
 
@@ -34,11 +35,15 @@ typedef struct wc_wordcut_table_element_t
 
 typedef struct wc_wordcut_result_t
 {
+  gint n;
+  gint* index;
+  gint* reverse;
   gsize len;
   gchar *str;
+
   WcWordcutTableElement *tab;
-  gint *index;
-  gint n;
+
+ 
 } WcWordcutResult;
 
 gint wc_wordcut_result_str(WcWordcutResult* self , gchar *out , gsize out_size , const gchar *delimiter,gsize del_len);

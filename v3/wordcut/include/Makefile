@@ -76,7 +76,7 @@ PACKAGE = wordcut
 PKG_CONFIG = /home/vee/usr/bin/pkg-config
 RANLIB = ranlib
 STRIP = strip
-VERSION = 0.1.1
+VERSION = 0.1.1pre2
 
 SUBDIRS = wordcut
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
