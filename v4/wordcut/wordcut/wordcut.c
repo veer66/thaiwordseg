@@ -176,7 +176,8 @@ break_chunk(int *tab,size_t len,int start,int stop) {
 }
 
 static int *
-mk_morpho_chunk_graph(int *tab,size_t len) {
+mk_morpho_chunk_graph(int *tab,size_t len) 
+{
      int i,prev=0,start=(-1),stop=(-1);  
      int *map=(int *)xmalloc(sizeof(int)*len);
      for(i=0;i<len;i++) map[i]=(-1);
