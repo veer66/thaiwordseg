@@ -42,28 +42,28 @@
 #include<wordcut/wordcut_dict.h>
 
 int wordcut_dict_init(WordcutDict *self,const char *filename) {
-    int fd;
     struct stat st;
     uint8_t *data;
     off_t size;
-    int x=0;
+    FILE *fp;
 
-    fd=open(filename,O_RDONLY);
-    if (fd==(-1)) return -1;
-    
-    if(fstat(fd,&st)==(-1)) return -1;
+
+    fp=fopen(filename,"r");
+
+    if (!fp) {
+        fprintf(stderr,"Can't open dictionary file\n");
+        exit(-1);
+    }
+
+    if(stat(filename,&st)==(-1)) return -1;
     size=st.st_size;
     self->size=(size_t)size;
     data=(uint8_t *)malloc(self->size);
-    while(size>0) {
-        x=read(fd,data+x,size);
-        if (x==(-1)) {
-            return -1;
-        }
-        size=size-x;
-    }
+
+    fread(data,size,1,fp);
+
     self->data=data;
-    close(fd);
+    fclose(fp);
     return 0;
 }
 

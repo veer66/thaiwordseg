@@ -304,7 +304,8 @@ void encode(int *size) {
 int main (int argc,char** argv) {
     int size,fd;
     char *fn1,*fn2;
-    ssize_t ret,x=0;
+    size_t ret,x=0;
+	 FILE *fp;
 
     
     if (argc<3) {
@@ -341,16 +342,16 @@ int main (int argc,char** argv) {
     printf ("\n");
 */
   
-    fd=open(fn2,O_CREAT | O_TRUNC | O_WRONLY,S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR );
-    while(size>0) {
-        ret=write(fd,outb+x,size);
-        if (ret==(-1)) {
-            fprintf (stderr,"Could not write result.\n");
-            exit(1);
-        }
-        size=size-ret;
-        x=ret;
+    fp=fopen(fn2,"r");
+    if (!fp) {
+        fprintf (stderr,"%s:%d: Can't open file %s\n",__FILE__,__LINE__,fn2);
+        exit(1);
     }
-    close(fd);
+
+    if (fwrite(outb,1,size,fp)!=size) {
+        fprintf (stderr,"Could not write result.\n");
+        exit(1);
+    }
+    fclose(fp);
     return 0;
 }
