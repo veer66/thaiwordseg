@@ -31,6 +31,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #include<stdio.h>
 #include<string.h>
 #include<unistd.h>
@@ -39,160 +40,104 @@
 #include<wordcut/path.h>
 
 void usage(void) {
-    printf ("usage: wordcut [OPTION...]\n");
-    printf ("  -D <dictionary>   specific dictionary file.\n");
-    printf ("  -d <delimiter>    specific delimiter.\n");
-    printf ("  -a                put aggressive delimiter.\n");
-    printf ("  -h                help and exit.\n");
+     printf ("usage: wordcut [OPTION...]\n");
+     printf ("  -D <dictionary>   specific dictionary file.\n");
+     printf ("  -d <delimiter>    specific delimiter.\n");
+     printf ("  -a                put aggressive delimiter.\n");
+     printf ("  -h                help and exit.\n");
     
-    exit(1);
+     exit(1);
 }
 
 int
 main (int argc,char **argv) {
 #define MAXBUF 4096
-    char buffer[MAXBUF],thbuf[MAXBUF],abuf[MAXBUF],wbuf[MAXBUF];
-    char *bf,*p,*tp;
-    int state=0,i;
-    Wordcut wordcut;
-    WordcutResult result;
-    extern char *optarg;
-    extern int optind;
-    int ch;
-    char *delimiter="|";
-    char *dictfile=WORDCUT_DATA_PATH "/tdict.wcd";
-    int optD=0,optd=0;
-    int aggressive=0;
-  
-
+     char buffer[MAXBUF];
+     Wordcut wordcut;
+     WordcutResult result;
+     extern char *optarg;
+     extern int optind;
+     int ch;
+     char *delimiter="|";
+     char *dictfile=WORDCUT_DATA_PATH "/tdict.wcd";
+     int optD=0,optd=0;
+     int aggressive=0;
     
-    while((ch=getopt(argc,argv,"d:D:ha"))!= (-1)) {
+     while((ch=getopt(argc,argv,"d:D:ha"))!= (-1)) {
+	  switch(ch) {
+	  case 'D':
+	       dictfile=(char *)xmalloc(sizeof(char)*(strlen(optarg)+1));
+	       strcpy(dictfile,optarg);
+	       optD=1;
+	       break;
+	  case 'd':
+	       delimiter=(char *)xmalloc(sizeof(char)*(strlen(optarg)+1));
+	       strcpy(delimiter,optarg);
+	       optd=1;
+	       break;
+	  case 'h':
+	       usage();
+	       break;
+	  case 'a':
+	       aggressive=1;
+	       break;                                
+	  default:
+	       usage();
+	       break;
+	  }
+     }
+        
+     if(wordcut_init(&wordcut,dictfile)!=0) {
+	  fprintf (stdout,"Could not initialize wordcut.\n");
+	  exit(1);
+     }
 
-        switch(ch) {
-            case 'D':
-                dictfile=(char *)xmalloc(sizeof(char)*(strlen(optarg)+1));
-                strcpy(dictfile,optarg);
-                optD=1;
-                break;
-            case 'd':
-                delimiter=(char *)xmalloc(sizeof(char)*(strlen(optarg)+1));
-                strcpy(delimiter,optarg);
-                optd=1;
-                break;
-            case 'h':
-                usage();
-                break;
-            case 'a':
-                aggressive=1;
-                break;                                
-            default:
-                usage();
+     while (fgets(buffer,MAXBUF,stdin)!=NULL) {
+	  char outbuf[MAXBUF];
+	  char *p,*op;
+	  size_t i=0;
+	  int flag=0;
+	  
+	  p=buffer;
+	  while(*p!='\0') {
 
-                break;
-        }
-    }
-    
-    
-    if(wordcut_init(&wordcut,dictfile)!=0) {
-        fprintf (stdout,"Could not initialize wordcut.\n");
-        exit(1);
-    }
+	       for(op=outbuf;*p!='\0' && (*p<'¡' || *p>'ì'); p++,op++ ) {
+		    *op=*p;		    
+	       }	
+	       if(outbuf!=op) {
+		    *op='\0';
+		    fputs(outbuf,stdout);
+	       } 
 
-    bf=abuf;
+	       /* Thai */	       
+	       for(op=outbuf;*p !='\0' && *p>='¡' && *p<='ì'; p++,op++ ) {
+		    *op=*p;
+	       }   	       
+	       if (op!=outbuf) {
+		    *op='\0';
+		    wordcut_cut(&wordcut,outbuf,&result);
 
-    state=(-1);
-    
-    while (fgets(buffer,MAXBUF,stdin)!=NULL) {
-        for(p=buffer;*p!='\0';p++) {
-            if(*p>='¡' && *p<='ì') {
-                
-                if(state==0) {
-                    *bf='\0';
+		    if(aggressive) {
+			 fputs(delimiter,stdout);
+		    }
 
-                    if(aggressive) {
-                        fputs(delimiter,stdout);
-                    }
-                    fputs(abuf,stdout);
-                    
-                    bf=thbuf;
-                    *bf=*p;
-                    bf++;
-                    state=1;
-                } else if (state==(-1)) {
-                    bf=thbuf;
-                    *bf=*p;
-                    bf++;
-                    state=1;
-                } else {
-                    *bf =*p;
-                    bf++;
-                }
-            } else {
+		    for(i=0;i<result.count;i++) {
+			 char tword_buf[MAXBUF];
+			 strncpy(tword_buf,result.str+result.start[i],result.offset[i]);
+			 tword_buf[result.offset[i]]='\0';
+			 fputs(tword_buf,stdout);
+			 if(aggressive || i+1 != result.count) {
+			      fputs(delimiter,stdout);
+			 }
+		    }
+	       }
+	       
+	  }	  
+     }
+     
+     wordcut_close(&wordcut);
 
-                if(state!=0) {
-                    
-                    *bf='\0';
-                    wordcut_cut(&wordcut,thbuf,&result);
-
-                    if(aggressive) {
-                        fputs(delimiter,stdout);
-                    }
-                    
-                    
-                    for(i=0;i<result.count;i++) {
-                        int j;
-                        char *op;
-                        for(j=0,tp=result.str+result.start[i],op=wbuf;
-                            j<result.offset[i];j++,op++,tp++) {
-                            
-                            *op=*tp;
-                     
-                        }
-                        *op='\0';
-                        fputs(wbuf,stdout);
-                        if(i+1!=result.count)
-                            fputs(delimiter,stdout);
-                    }
-                    
-                    state=0;
-                    bf=abuf;
-                    *bf=*p;
-                    bf++;
-                } else if (state==(-1)) {
-                    bf=abuf;
-                    *bf =*p;
-                    bf++;                
-                } else {
-                    /* state0 */
-                    *bf =*p;
-                    bf++;
-                }
-            }
-        }
-
-    }
-
-    if(*bf>='¡' && *bf<='ì') {
-        if (state==1) {
-            *bf='\0';
-            if(aggressive) {
-                fputs(delimiter,stdout);
-            }
-
-            fputs(abuf,stdout);
-        }
-    } else if (state==0) {
-        *bf='\0';
-        if(aggressive) {
-            fputs(delimiter,stdout);
-        }
-
-        fputs(abuf,stdout);
-    }
-
-    wordcut_close(&wordcut);
-
-    if(optd) free(delimiter);
-    if(optD) free(dictfile);
-    return 0;
+     if(optd) free(delimiter);
+     if(optD) free(dictfile);
+     return 0;
 }
