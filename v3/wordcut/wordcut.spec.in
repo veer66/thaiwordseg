@@ -4,6 +4,7 @@ Version:	 @VERSION@
 Release:	 1
 License:	 GPL
 Group:       Development/Libraries
+Source:		 wordcut-%{version}.tar.gz
 BuildRoot:	 /var/tmp/%{name}-%{version}-root
 URL:		 http://thaiwordseg.sourceforge.net/
 

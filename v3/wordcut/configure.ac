@@ -37,4 +37,5 @@ AC_OUTPUT(
 	include/wordcut/Makefile 
 	include/wordcut/wcpath.h
 	wordcut.pc
+	wordcut.spec
 )
