@@ -1,2 +1,0 @@
-libwordcut.lo libwordcut.o : libwordcut.c
-libwordcut.c :
