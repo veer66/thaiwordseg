@@ -1,13 +1,10 @@
 #!/usr/bin/env ruby
 
-=begin
-Limitation Thai string can't be longer than 65535 characters.
-=end
-
 require 'wcdict'
 require 'wcthaitokenizer'
 
 DictPath='/home/vee/tmp/dict.etd'
+
 module TestWordcut
   class Token
     attr_reader :iter , :start
@@ -269,21 +266,57 @@ module TestWordcut
       f=open(filename)
       @rule=[]
       while f.gets do 
-     	@rule << $_.chomp 
+     	@rule << Regexp.compile($_.chomp)
       end
       f.close
     end	
 
-    def cut(str)      
-      marker=0
-      tab=[]
+    def cut(str)   
+      @str=str
+      @marker=0
+      @tab=[]
+
       @rule.each do |rul|
+
+	match=rul.match(str)
+	if (match) then
+	  for i in 0..match.size-1 do
+	    start=match.begin(i)
+	    stop=match.end(i)-1
+	    print "#{start}\t#{stop-1}\t#{str[start..stop-1]}\n"
+	    mark(start,stop)
+	  end
+	end
 	
       end
     end
 
-    def mark(tab,start,stop)
-      
+    def mark(start,stop)
+      print "Tab before #{@tab}\n"
+      @marker=@marker+1
+      len=@str.length
+      if (@tab[start]==0) then
+	marker=start
+      else
+	marker=@marker
+      end
+
+      for i in start..stop-1 do
+	@tab[i]=marker
+      end
+
+      if(@tab[stop]!=0)then
+	old_marker=@tab[stop]
+	j=stop
+	while j<len and @tab[j]==old_marker do
+	  @tab[j]=marker
+	  j=j+1
+	  print "!!! j=#{j}\n"
+	end
+      else
+	@tab[stop]=marker
+      end
+
     end
 
     def dump_rule
@@ -300,4 +333,5 @@ if $0 == __FILE__ then
   #  result=wc.cut("ตากลม")
   #  result.dump
   unit=TestWordcut::WordUnit.new
+  unit.cut("ตากลมเดลินิวส์")
 end
