@@ -1,0 +1,41 @@
+\section{รูปแบบของคำ}
+\subsection{คลาส WcWordunitMap}
+\index{WcWordunitMap}
+\index{คลาส!WcWordunitMap}
+\begin{itemize}
+\item{โครงสร้างของคลาส WcWordUnitMap}
+  \begin{verbatim}
+    typedef struct wc_wordunit_map
+    {
+      size_t len;
+      int *assoc_tab,*break_tab;
+    } WcWordunitMap;
+  \end{verbatim}
+\item{การสร้างวัตถุ WcWordUnitMap}
+  \begin{verbatim}
+    WcWordunitMap* wc_wordunit_map_new(const char* str,size_t len);
+    void wc_wordunit_map_init (WcWordunitMap *self,const char* str,size_t len);
+  \end{verbatim}
+
+\item{การทำลายวัตถุ WcWordUnitMap}
+  \begin{verbatim}
+    void wc_wordunit_map_delete(WcWordunitMap *self);
+  \end{verbatim}
+
+\item{การค้นหาสายอักขระที่สอดคล้องกับรูปแบบของคำ}
+  \begin{verbatim}
+    WcWordunitMap* wc_wordunit_find(const char* str,size_t len);
+  \end{verbatim}
+  คำสั่ง wc\_wordunit\_find ทำการสร้างวัตถุ WcWordunitMap โดยไม่ต้องใช้
+  คำสั่ง wc\_wordunit\_new
+
+\item{การตรวจสอบการผิดรูปแบบของคำ}
+  \begin{verbatim}
+    wc_boolean wc_wordunit_map_break(WcWordunitMap *map,int start,int stop);
+  \end{verbatim}
+
+\item{การเรียกดูสายอักขระที่สอดคล้องกับรูปแบบของคำ}
+  \begin{verbatim}
+    int wc_wordunit_map_assoc(WcWordunitMap *map,int stop);
+  \end{verbatim}
+\end{itemize}

@@ -1,0 +1,341 @@
+\section{พจนานุกรม}\index{พจนานุกรม}
+\subsection{คลาส WcDict}
+\index{WcDict}
+\index{คลาส!WcDict}
+\begin{itemize}
+\item{โครงสร้างของ WcDict}
+  \index{โครงสร้าง!WcDict}
+  \begin{verbatim} 
+    typedef struct {
+      char **pos;
+      wc_uint32 pos_size,root,size;
+      wc_uchar *tab;
+    } WcDict;
+  \end{verbatim}
+
+
+\item{การสร้างวัตถุ WcDict}
+
+  \index{การสร้าง!WcDict}
+  \index{wc\_dict\_init}
+  \index{wc\_dict\_new}
+  \begin{verbatim}
+    WcDict* wc_dict_new();
+    void wc_dict_init(WcDict *self);
+  \end{verbatim}
+
+\item{การทำลายวัตถุ WcDict}
+  \index{การทำลายวัตถุ!WcDict}
+  \index{wc\_dict\_destory}
+  \index{wc\_dict\_delete}
+  \begin{verbatim}
+    void wc_dict_destroy(WcDict* self);
+    void wc_dict_delete(WcDict* self);
+  \end{verbatim}
+
+\item{การบรรจุพจนานุกรมเข้าสู่หน่วยความจำ}
+  \index{การบรรจุพจนานุกรมเข้าสู่หน่วยความจำ}
+  \index{wc\_dict\_load}
+  \begin{verbatim}
+    WC_STATUS wc_dict_load(WcDict *self,const char *filename);
+  \end{verbatim}
+
+\item{การนำตัวเลื่อนมาจากพจนานุกรม}
+  \index{การนำตัวเลื่อนมาจากพจนานุกรม}
+  \index{ราก}
+  \index{wc\_dict\_root}
+  \begin{verbatim}
+    WC_STATUS wc_dict_load(WcDict *self,const char *filename);
+  \end{verbatim}
+\item{Using example.}
+  \index{ตัวอย่าง!WcDict}
+  \begin{verbatim}
+    /* การประกาศการรวมส่วนหัว */
+    #include<wordcut/wcdict.h>
+
+    int 
+    main()
+    {
+      /* การประกาศแบบชนิดของตัวแปร */
+      WcDict *dict;
+      WcDictIter iter;
+
+      /* การสร้างวัตถุ WcDict */
+      dict=wc_dict_new();
+
+      /* การบรรจุพจนานุกรมเข้าสู่หน่วยความจำ */
+      wc_dict_load(dict,"../data/dict.etd");
+
+      /*  การนำตัวเลื่อนมาจากพจนานุกรม */
+      wc_dict_root(dict,&iter);
+
+      /* การทำลายวัตถุ WcDict */
+      wc_dict_delete(dict);
+      return 0;
+    }
+  \end{verbatim}
+\end{itemize}
+
+\subsection{คลาส WcDictIter}
+\index{WcDictIter}
+\index{คลาส!WcDictIter}
+วัตถุ WcDictIter ทำหน้าที่เลื่อนไปบนตำแหน่งต่างบนพจนานุกรม (WcDict)
+\begin{itemize}
+\item{โครงสร้างของ WcDictIter}
+  \index{โครงสร้าง!WcDictIter}
+  \begin{verbatim}
+    typedef struct wc_dict_iter_t {
+      WcDict* dict;  /* ตัวชี้ไปยังพจนานุกรม */
+      wc_uint32 p,i; 
+      int i_state; 
+      wc_boolean terminator; 
+      WcDictIterStatus status;
+      #ifdef WC_ITER_EXTRA_INFO
+      WcNodeType type;
+      #endif
+    } WcDictIter;
+  \end{verbatim}
+\item{ค่าคงที่ของคลาส WcDictIter}
+  \index{ค่าคงที่!WcDictIter}
+  \begin{itemize}
+  \item{ค่าคงที่สำหรับแสดงสถานของตัวเลื่อน}   
+    \index{ค่าคงที่!สำหรับแสดงสถานของตัวเลื่อน}   
+    \begin{itemize}
+      \index{WC\_DICT\_ITER\_ACTIVE}
+    \item{ค่าคงที่ WC\_DICT\_ITER\_ACTIVE ใช้แสดงสถานะว่าตัวเลื่อนยังอยู่ในปมของทรัยมีค่าเท่ากับ 0}
+      \index{WC\_DICT\_ITER\_DEAD}
+    \item{ค่าคงที่ WC\_DICT\_ITER\_DEAD ใช้แสดงสถานะว่าตัวเลื่อนไม่อยู่ในปมของทรัยแล้วมีค่าเท่ากับ    1}
+    \end{itemize}
+    \index{ค่าคงที่!สำหรับแสดงสถานะการใช้งานของตัวชี้ในกรณีที่มีการบีบอัดอุปสรรค}
+  \item{ค่าคงที่สำหรับแสดงสถานะการใช้งานของตัวชี้ในกรณีที่มีการบีบอัดอุปสรรค} 
+    \begin{itemize}
+      \index{WC\_DICT\_ITER\_I\_RESET}
+    \item{ค่าคงที่ WC\_DICT\_ITER\_I\_RESET มีค่าเท่า 0 แสดงการเริ่มต้นใหม่}
+      \index{WC\_DICT\_ITER\_I\_INUSE}
+    \item{ค่าคงที่ WC\_DICT\_ITER\_I\_INUSE  1 มีค่าเท่ากับ 1 แสดงการใช้งาน}
+    \end{itemize}
+
+    \index{ค่าคงที่!สำหรับแสดงแบบชนิดของข้อมูลในพจนานุกรมที่ตำแหน่งที่ตำเลื่อนอยู่}
+  \item{ค่าคง!ที่สำหรับแสดงแบบชนิดของข้อมูลในพจนานุกรมที่ตำแหน่งที่ตำเลื่อนอยู่}
+    \begin{itemize}
+      \index{WC\_NODE\_TYPE\_SEQ}
+    \item{ค่าคงที่ WC\_NODE\_TYPE\_SEQ มีค่าเท่ากับ 0 แทนแบบชนิดที่มีการบีบอัดอุปสรรค}
+      \index{WC\_NODE\_TYPE\_BIN}
+    \item{ค่าคงที่ WC\_NODE\_TYPE\_BIN มีค่าเท่ากับ 1 แทนแบบชนิดการเก็บข้อมูลในทรับปกติมีการค้นหาแบบทวิภาค}
+      \index{WC\_NODE\_TYPE\_POS}
+    \item{ค่าคงที่ WC\_NODE\_TYPE\_POS มีค่าเท่ากับ 2  แทนแบบชนิดการเก็บข้อมูลที่เป็นชนิดของคำ}
+      \index{WC\_NODE\_TYPE\_START}
+    \item{ค่าคงที่ WC\_NODE\_TYPE\_START มีค่าเท่ากับ 3  แทนแบบชนิดจุดเริ่มต้น}
+    \end{itemize}
+  \end{itemize}
+
+\item{แบบชนิดของคลาส WcDictIter}
+  \index{แบบชนิด!WcDictIter}
+  \begin{itemize}
+    \index{WcDictIterStatus}
+  \item{แบบชนิด WcDictIterStatus ตรงกับแบบชนิดจำนวนเต็มใช้ร่วมกับค่าคงที่ WC\_DICT\_ITER\_ACTIVE และ WC\_DICT\_ITER\_DEAD}
+    \index{WcNodeType}
+  \item{แบบชนิด WcNodeType ตรงกับแบบชนิดจำนวนเต็มใช้ร่วมกับค่าคงที่ WC\_NODE\_TYPE\_SEQ WC\_NODE\_TYPE\_BIN WC\_NODE\_TYPE\_POS และ WC\_NODE\_TYPE\_START}
+  \end{itemize}
+  
+
+\item{การนำวัตถุ WcDictIter มาจาก WcDict}
+  \index{การสร้าง!WcDictIter} \\
+  คลาส WcDictIter ไม่มีตัวสร้างที่แยกเป็นเอกเทศหากแต่ให้เมท็อด wc\_dict\_root ของ
+  คลาส WcDict ในการสร้างโดยนำวัตถุ WcDict มาเป็นส่วนประกอบด้วย
+  \begin{verbatim}
+    void wc_dict_root(WcDict *self,WcDictIter* iter);
+  \end{verbatim}
+
+\item{การเลื่อนของวัตถุ WcDictIter}
+  \index{การเลื่อน!WcDictIter}
+  \begin{verbatim}
+    WC_STATUS wc_dict_iter_transit(WcDictIter *self,char ch);
+  \end{verbatim}
+\item{ตัวอย่างการใช้งานวัตถุ WcDictIter}
+  \begin{verbatim}
+    #include<wordcut/wcdict.h>
+    int
+    main ()
+    {
+      /* ประกาศตัวแปร */
+      WcDict *dict;
+      WcDictIter iter;
+      wc_boolean flag = WC_TRUE;
+      char *str = "ทางเท้าเข้าบ้าน";
+      char *p;
+
+      /* การสร้างวัตถุ WcDict */
+      dict = wc_dict_new ();
+
+      /* การอ่านข้อมูลพจนานุกรมเข้าสู่หน่วยความจำ */
+      wc_dict_load (dict, "../data/dict.etd");
+
+      /* การกำหนดค่าตัวเลื่อนให้อยู่ที่ส่วนรากของทรัยที่ใช้
+      เก็บพจนานุกรม */
+      wc_dict_root (dict, &iter);
+
+      /* ให้ p อยู่ที่จุดเริ่มต้นของสายอักขระ */
+      p = str;
+
+      while (flag && *p != '\0')
+      {
+	/* การเลื่อนตัวเลื่อนไปในทางที่มีอักษร *p */
+	wc_dict_iter_transit (&iter, *p);
+
+	/* ตรวจสอบว่ายังเลื่อนไปในทรัยได้ต่อหรือไม่ */
+	flag = (iter.status == WC_DICT_ITER_ACTIVE);
+
+
+	if (flag)
+        {
+          printf ("ตัวอักษร=%c\t\t\tท้ายคำ=%s\n", *p,
+          /* ตรวจสอบว่าเป็นตัวสุดท้ายของคำหรือไม่ */
+          (iter.terminator ? "ใช่" : "ไม่ใช่"));
+        }
+
+
+	/* เลื่อน p ไปตัวถัดไป */
+	p++;
+      }
+
+      /* การทำลายวัตถุ WcDict */
+      wc_dict_delete (dict);
+      return 0;
+    }
+  \end{verbatim}
+\end{itemize}
+
+\subsection{คลาส WcDictIterPos}
+\index{WcDictIterPos}
+\index{คลาส!WcDictIterPos}
+\begin{itemize}
+\item{โครงสร้างของคลาส WcDictIterPos}
+  \index{โครงสร้าง!WcDictIterPos}
+  \begin{verbatim}
+    typedef struct wc_dict_iter_pos 
+    {
+      wc_uint32 p;
+      wc_byte len;
+      WcDict *dict;
+    } WcDictIterPos;
+  \end{verbatim}
+\item{การนำวัตถุ WcDictIterPos มากจากวัตถุ WcDictIter}
+  \index{การสร้าง!WcDictIterPos}
+  \begin{verbatim}
+    void wc_dict_iter_pos(WcDictIter *self,WcDictIterPos *pos);
+  \end{verbatim}
+\item{การถอดข้อมูลของวัตถุ WcDictIterPos}
+  \index{wc\_dict\_iter\_pos\_posid}
+  \begin{verbatim}
+    WC_STATUS wc_dict_iter_pos_posid(WcDictIterPos *self,int index,wc_byte *id);
+  \end{verbatim}
+\item{การแปลงรหัสชนิดของคำเป็นสายอักขระตัวย่อ}
+
+  \index{wc\_dict\_iter\_posid2str}
+  \begin{verbatim}
+    const char* wc_dict_iter_pos_posid2str(WcDictIterPos* self,wc_byte pos_id);
+  \end{verbatim}
+
+\item{ตัวอย่างการใช้งานคลาส WcDictIterPos}
+  \index{ตัวอย่าง!WcDictIterPos}
+  \begin{verbatim}
+    #include<wordcut/wcdict.h>
+    int
+    main ()
+    {
+      /* ประกาศตัวแปร */
+      WcDict *dict;
+      WcDictIter iter;
+      WcDictIterPos iter_pos;
+      wc_byte id;
+      wc_boolean flag = WC_TRUE;
+      int i;
+      char *str = "ทางเท้าเข้าบ้าน";
+      char *p;
+      const char *pos;
+
+      /* การสร้างวัตถุ WcDict */
+      dict = wc_dict_new ();
+
+      /* การอ่านข้อมูลพจนานุกรมเข้าสู่หน่วยความจำ */
+      wc_dict_load (dict, "../data/dict.etd");
+
+      /* การกำหนดค่าตัวเลื่อนให้อยู่ที่ส่วนรากของทรัยที่ใช้
+      เก็บพจนานุกรม */
+      wc_dict_root (dict, &iter);
+
+      /* ให้ p อยู่ที่จุดเริ่มต้นของสายอักขระ */
+      p = str;
+
+      while (flag && *p != '\0')
+      {
+	/* การเลื่อนตัวเลื่อนไปในทางที่มีอักษร *p */
+	wc_dict_iter_transit (&iter, *p);
+
+	/* ตรวจสอบว่ายังเลื่อนไปในทรัยได้ต่อหรือไม่ */
+	flag = (iter.status == WC_DICT_ITER_ACTIVE);
+
+
+	if (flag)
+        {
+          printf ("ตัวอักษร=%c\t\tท้ายคำ=%s\t", *p,
+          /* ตรวจสอบว่าเป็นตัวสุดท้ายของคำหรือไม่ */
+          (iter.terminator ? "ใช่" : "ไม่ใช่"));
+          if (iter.terminator)
+          {
+            printf ("ชนิดของคำ\t");
+            /* การเรียกใช้วัตถุ WcDictIterPos */
+            wc_dict_iter_pos (&iter, &iter_pos);
+
+            /* การเลื่อนไปบน POS แต่ละตัว */
+            for (i = 0; i < iter_pos.len; i++)
+            {
+              /* การนำออก POS ID */
+              wc_dict_iter_pos_posid (&iter_pos, i, &id);
+
+              /* การเปลี่ยน POS ID เป็นสายอักขระ */
+              pos = wc_dict_iter_pos_posid2str (&iter_pos, id);
+
+              printf ("%d,%s ", id, pos);
+            }
+          }
+          printf ("\n");
+        }
+        /* เลื่อน p ไปตัวถัดไป */
+        p++;
+      }
+
+      /* การทำลายวัตถุ WcDict */
+      wc_dict_delete (dict);
+      return 0;
+    }
+  \end{verbatim}
+\end{itemize}
+\subsection{คลาส WcDictMap}
+\index{WcDictMap}
+\index{คลาส!WcDictMap}
+\begin{itemize}
+\item{โครงสร้างของคลาส WcDictMap}
+  \index{โครงสร้าง!WcDictMap}
+  \begin{verbatim}
+    typedef struct wc_dict_map_tok_pos_t
+    {
+      int start;
+      WcDictIterPos pos;
+    }WcDictMapTokPos;
+    
+    typedef struct wc_dict_map_t
+    {
+      int* index;  
+      WcDictMapTokPos *tok;
+      size_t strlen;
+      size_t len;
+      size_t size;
+    } WcDictMap;
+  \end{verbatim}
+  \item{การสร้างวัตถุของคลาส WcDictMap}
+    \begin{verbatim}
+      void wc_dict_map_init(WcDictMap *self,WcDict *dict,const char *str,size_t len);
+    \end{verbatim}
+\end{itemize}

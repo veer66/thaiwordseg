@@ -1,22 +1,51 @@
 all : wordcut.dvi
 
-showdvi : wordcut.dvi
-	xdvi $<
-
 showpdf : wordcut.pdf
 	acroread $<
 
 wordcut.pdf : wordcut.dvi
 	dvipdf $<
 
+showdvi : wordcut.dvi
+	xdvi $<
+
+wordcut.dvi : wordcut.tex ref_c_api_wu.tex ref_c_api_dict.tex ref_c_api_basic.tex design.tex acknownledge.tex 
+	latex wordcut
+	latex wordcut
+	bibtex wordcut
+	makeindex -T wordcut
+	latex wordcut
+	latex wordcut
+
+acknownledge.tex : acknownledge.th.tex
+	swath -f latex < $< > $@
+
+design.tex : design.th.tex
+	swath -f latex < $< > $@
+
+ref_c_api_basic.tex : ref_c_api_basic.th.tex
+	swath -f latex < $< > $@
+
+ref_c_api_dict.tex : ref_c_api_dict.th.tex
+	swath -f latex < $< > $@
+
+ref_c_api_wu.tex : ref_c_api_wu.th.tex
+	swath -f latex < $< > $@
+
 wordcut.tex : wordcut.th.tex
-	swath -f latex < wordcut.th.tex > wordcut.tex
+	swath -f latex < $< > $@
+clean:
+	rm -f wordcut.tex ref_c_api_wu.tex ref_c_api_dict.tex ref_c_api_basic.tex design.tex acknownledge.tex 
+	rm -f *.dvi *.pdf *.aux *.lof *.log *.idx *.ind *.ilg *.toc *.bbl
+update:
+	./autottex.sh wordcut > Makefile
 
-wordcut.dvi : wordcut.tex
-	latex $<
-	latex $<
-	makeindex -T  `echo $< | sed 's/\.tex$$//g'`
-	latex $<
+distclean : clean
+	rm -f *~ *.tar.gz
 
-clean :
-	rm -f *.dvi *.log *.aux *.idx *.ind *.ilg wordcut.tex *.toc
+dist : distclean
+	rm -rf wordcut-20030302
+	mkdir wordcut-20030302
+	for x in * ;do if [ -f $$x ];then cp $$x wordcut-20030302 ;fi ;done
+	tar cvvzf wordcut-20030302.tar.gz wordcut-20030302
+	rm -rf wordcut-20030302
