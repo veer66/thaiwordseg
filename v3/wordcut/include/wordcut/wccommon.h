@@ -19,6 +19,8 @@ VOID *wc_xrealloc (VOID *p, size_t n);
 char *wc_xstrdup (char *p);
 #endif
 
+typedef void *wc_pointer;
+
 
 #define MEMCHK(mem) if( (mem) == NULL ) { fprintf(stderr,"%s:%d: Out of memory.\n",__FILE__,__LINE__); exit(1); }
 

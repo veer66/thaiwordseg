@@ -87,7 +87,8 @@ am__quote = @am__quote@
 install_sh = @install_sh@
 wordcutincludedir = $(includedir)/wordcut
 wordcutinclude_HEADERS = wccommon.h wcdict.h wcstring.h wcwordunit.h \
-	wcsplit.h wcwordcut.h wcpath.h wcdictmap.h
+	wcsplit.h wcwordcut.h wcpath.h wcdictmap.h \
+	wcsymhash.h
 
 subdir = include/wordcut
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
