@@ -23,7 +23,7 @@ main ()
          ที่มีอักขระตัวสุดท้ายที่ตำแหน่งที่ i */
       start = wc_wordunit_map_assoc (wu_map, i);
       if (start != WC_WORDUNIT_NULL)
-        printf ("เริ่มต้น=%d\tสิ้นสุด=%d\n", start, i);
+	printf ("เริ่มต้น=%d\tสิ้นสุด=%d\n", start, i);
     }
   return 0;
 }

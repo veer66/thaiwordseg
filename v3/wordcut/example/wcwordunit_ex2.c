@@ -22,14 +22,14 @@ main ()
   /* ตรวจสอบว่าคู่อันดับ (จุดเริ่มต้น,จุดสิ้นสุด) ทำให้เกิดการขัดรูปแบบของคำหรือไม่ */
   is_break = wc_wordunit_map_break (wu_map, start, stop);
   printf ("เริ่มต้น=%d,สิ่นสุด=%d,ขัด=%s\n", start, stop,
-          is_break ? "ใช่" : "ไม่");
+	  is_break ? "ใช่" : "ไม่");
 
   start = 0;
   stop = 2;
   /* ตรวจสอบว่าคู่อันดับ (จุดเริ่มต้น,จุดสิ้นสุด) ทำให้เกิดการขัดรูปแบบของคำหรือไม่ */
   is_break = wc_wordunit_map_break (wu_map, start, stop);
   printf ("เริ่มต้น=%d,สิ่นสุด=%d,ขัด=%s\n", start, stop,
-          is_break ? "ใช่" : "ไม่");
+	  is_break ? "ใช่" : "ไม่");
 
   return 0;
 }

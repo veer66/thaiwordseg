@@ -1,1 +1,178 @@
-\section{
+\section{โปรแกรมตัดคำ}
+\subsection{คลาส WcWordcut}
+\index{คลาส!WcWordcut}
+\begin{itemize}
+  \item{โครงสร้างคลาส WcWordcut}
+    \index{โครงสร้าง!WcWordcut}
+    \begin{verbatim}
+typedef struct wc_wordcut_t
+{
+  WcDict *dict;  
+  wc_boolean ext_dict;
+} WcWordcut;
+    \end{verbatim}
+  \item{ค่าคงที่ของคลาส WcWordcut}
+    \index{ค่าคงที่!WcWordcut}
+    \begin{verbatim}
+#define WC_WORD_TYPE_UNK      'U'
+#define WC_WORD_TYPE_DICT     'D'
+#define WC_WORD_TYPE_WORDUNIT 'W'
+#define WC_WORD_TYPE_JOIN     'J'
+    \end{verbatim}
+  \item{การสร้างวัตถุของคลาส WcWordcut}
+    \index{การสร้าง!WcWordcut}
+    \begin{verbatim}
+WcWordcut* wc_wordcut_new();
+WcWordcut* wc_wordcut_new_with_dict(WcDict *dict);
+WcWordcut* wc_wordcut_new_with_dictfile(const char *dict_filename);
+void wc_wordcut_init(WcWordcut *self,WC_STATUS *error);
+void wc_wordcut_init_with_dict(WcWordcut *self,WcDict *dict);
+void wc_wordcut_init_with_dictfile(WcWordcut *self,const char *dict_filename,WC_STATUS *error);
+    \end{verbatim}
+  \item{การทำลายวัตถุของคลาส WcWordcut}
+    \index{การทำลาย!WcWordcut}
+    \begin{verbatim}
+void wc_wordcut_destroy(WcWordcut *self);
+void wc_wordcut_delete(WcWordcut *self);
+    \end{verbatim}
+  \item{การตัดคำโดยใช้คลาส WcWordcut}
+    \begin{verbatim}
+void wc_wordcut_cut(WcWordcut *self,const char* str,int len,WcWordcutResult *result);
+WC_STATUS wc_wordcut_cutline(WcWordcut *self,const char* str,
+  char *out,size_t out_size,const char *delimiter,size_t del_len);
+    \end{verbatim}
+  \item{ตัวอย่างการใช้งานคลาส WcWordcut}
+    \begin{verbatim}
+      #include<wordcut/wcwordcut.h>
+int
+main (int argc, char **argv)
+{
+  /* การประกาศตัวแปร */
+#define MAX_SIZE 1024
+  WcWordcut wordcut;
+  char out[MAX_SIZE];
+  char *str;
+  WC_STATUS e;
+
+
+  /* สร้าง WcWordcut */
+  wc_wordcut_init (&wordcut, &e);
+  if (e != WC_RET_NORMAL)
+    {
+      printf ("Could not initialize wordcut\n");
+      exit (1);
+    }
+  str = "ตากลมผมยาว";
+
+  /* สั่งตัดคำได้ผลลัพธ์เป็น WcWordcutResult */
+  if (wc_wordcut_cutline (&wordcut, str, out, MAX_SIZE, "|", 1)
+      == WC_RET_NORMAL)
+    {
+      printf ("%s\n", out);
+    }
+  else
+    {
+      printf ("Could not cutline.\n");
+      exit (1);
+    }
+
+  /* ทำลาย WcWordcut */
+  wc_wordcut_destroy (&wordcut);
+  return 0;
+}
+
+    \end{verbatim}
+\end{itemize}
+
+
+
+\subsection{คลาส WcWordcutResult}
+\index{คลาส!WcWordcutResult}
+\begin{itemize}
+  \item{โครงสร้างคลาส WcWordcutResult}
+    \index{โครงสร้าง!WcWordcutResult}
+    \begin{verbatim}
+typedef struct wc_wordcut_result_t
+{
+  int n;
+  int* index;
+  int* reverse;
+  size_t len;
+  char *str;
+  WcWordcutTableElement *tab;
+} WcWordcutResult;
+    \end{verbatim}
+  \item{ค่าคงที่ของคลาส WcWordcutResult}
+    \index{การเปลี่ยนวัตถุ WcWordcutResult ให้เป็นสายอักขระ}
+    \begin{verbatim}
+int wc_wordcut_result_str(WcWordcutResult* self , char *out , size_t out_size , const char *delimiter,size_t del_len);
+    \end{verbatim}
+  \item{การหาจำนวนคำในวัตถุ WcWordcutResult}
+    \begin{verbatim}
+      int wc_wordcut_result_len(WcWordcutResult *result);
+    \end{verbatim}
+    \item{การอ่านค่ารูปคำจากวัตถุ WcWordcutResult}
+      \begin{verbatim}
+WC_STATUS wc_wordcut_result_surface_at(WcWordcutResult *self,int p,char *out,size_t maxsize);
+      \end{verbatim}
+    \item{การอ่านค่าชนิดของคำจากวัตถุ WcWordcutResult}
+      \begin{verbatim}
+	const WcDictIterPos* wc_wordcut_result_pos_at(WcWordcutResult *self,int p);
+      \end{verbatim}
+      \item{การอ่านค่าชนิดของคำตอบจากวัตถุ WcWordcutResult}
+	\begin{verbatim}
+	  WcWordType wc_wordcut_result_type_at(WcWordcutResult *self,int p);
+	\end{verbatim}
+  \item{การสร้างวัตถุของคลาส WcWordcutResult}
+    \index{การสร้าง!WcWordcutResult}
+    \begin{verbatim}
+void wc_wordcut_init(WcWordcut *self,WC_STATUS *error);
+WcWordcut* wc_wordcut_new_with_dict(WcDict *dict);
+void wc_wordcut_init_with_dict(WcWordcut *self,WcDict *dict);
+    \end{verbatim}
+  \item{การทำลายวัตถุของคลาส WcWordcutResult}
+    \index{การทำลาย!WcWordcut}
+    \begin{verbatim}
+void wc_wordcut_result_destroy(WcWordcutResult *self);
+    \end{verbatim}
+  \item{ตัวอย่างการใช้งานคลาส WcWordcutResult และ WcWordcut}
+    \begin{verbatim}
+      #include<wordcut/wcwordcut.h>
+int
+main (int argc, char **argv)
+{
+  /* การประกาศตัวแปร */
+#define MAX_SIZE 1024
+  WcWordcut wordcut;
+  WcWordcutResult result;
+  char out[MAX_SIZE];
+  char *str;
+  int i;
+  WC_STATUS e;
+
+
+  /* สร้าง WcWordcut */
+  wc_wordcut_init (&wordcut, &e);
+  if (e != WC_RET_NORMAL)
+    {
+      printf ("Could not initialize wordcut\n");
+      exit (1);
+    }
+  str = "ตากลมผมยาว";
+
+  /* สั่งตัดคำได้ผลลัพธ์เป็น WcWordcutResult */
+  wc_wordcut_cut (&wordcut, str, strlen (str), &result);
+  for (i = 0; i < wc_wordcut_result_len (&result); i++)
+    {
+      /* นำรูปของคำออกจาก WcWordcutResult */
+      wc_wordcut_result_surface_at (&result, i, out, MAX_SIZE);
+      printf ("%s\n", out);
+    }
+
+  /* ทำลาย WcWordcut และ WcWordcutResult */
+  wc_wordcut_result_destroy (&result);
+  wc_wordcut_destroy (&wordcut);
+  return 0;
+}
+    \end{verbatim}
+\end{itemize}

@@ -45,10 +45,9 @@ typedef struct wc_wordcut_result_t
   WcWordcutTableElement *tab;
 } WcWordcutResult;
 
-int wc_wordcut_result_str(WcWordcutResult* self , char *out , size_t out_size , const char *delimiter,size_t del_len);
+int wc_wordcut_result_str(WcWordcutResult *self , char *out , size_t out_size , const char *delimiter,size_t del_len);
 
 void wc_wordcut_cut(WcWordcut *self,const char* str,int len,WcWordcutResult *result);
-void wc_wordcut_result_destroy(WcWordcutResult *self);
 void wc_wordcut_init(WcWordcut *self,WC_STATUS *error);
 WcWordcut* wc_wordcut_new();
 void wc_wordcut_destroy(WcWordcut *self);
@@ -62,6 +61,7 @@ WcWordType wc_wordcut_result_type_at(WcWordcutResult *self,int p);
 void wc_wordcut_result_destroy(WcWordcutResult *self);
 WcWordcut* wc_wordcut_new_with_dict(WcDict *dict);
 void wc_wordcut_init_with_dict(WcWordcut *self,WcDict *dict);
-
+WcWordcut* wc_wordcut_new_with_dictfile(const char *dict_filename);
+void wc_wordcut_init_with_dictfile(WcWordcut *self,const char *dict_filename,WC_STATUS *error);
 
 #endif

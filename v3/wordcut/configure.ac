@@ -1,6 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/wcdict.c)
-AM_INIT_AUTOMAKE(wordcut,0.1.2)
+AM_INIT_AUTOMAKE(wordcut,snapshot`date +%Y%m%d`)
+#AM_INIT_AUTOMAKE(wordcut,0.1.2)
 AC_SUBST(VERSION)
 
 dnl Checks for programs.

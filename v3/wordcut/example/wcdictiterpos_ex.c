@@ -36,30 +36,30 @@ main ()
 
 
       if (flag)
-        {
-          printf ("ตัวอักษร=%c\t\tท้ายคำ=%s\t", *p,
-                  /* ตรวจสอบว่าเป็นตัวสุดท้ายของคำหรือไม่ */
-                  (iter.terminator ? "ใช่" : "ไม่ใช่"));
-          if (iter.terminator)
-            {
-              printf ("ชนิดของคำ\t");
-              /* การเรียกใช้วัตถุ WcDictIterPos */
-              wc_dict_iter_pos (&iter, &iter_pos);
+	{
+	  printf ("ตัวอักษร=%c\t\tท้ายคำ=%s\t", *p,
+		  /* ตรวจสอบว่าเป็นตัวสุดท้ายของคำหรือไม่ */
+		  (iter.terminator ? "ใช่" : "ไม่ใช่"));
+	  if (iter.terminator)
+	    {
+	      printf ("ชนิดของคำ\t");
+	      /* การเรียกใช้วัตถุ WcDictIterPos */
+	      wc_dict_iter_pos (&iter, &iter_pos);
 
-              /* การเลื่อนไปบน POS แต่ละตัว */
-              for (i = 0; i < iter_pos.len; i++)
-                {
-                  /* การนำออก POS ID */
-                  wc_dict_iter_pos_posid (&iter_pos, i, &id);
+	      /* การเลื่อนไปบน POS แต่ละตัว */
+	      for (i = 0; i < iter_pos.len; i++)
+		{
+		  /* การนำออก POS ID */
+		  wc_dict_iter_pos_posid (&iter_pos, i, &id);
 
-                  /* การเปลี่ยน POS ID เป็นสายอักขระ */
-                  pos = wc_dict_iter_pos_posid2str (&iter_pos, id);
+		  /* การเปลี่ยน POS ID เป็นสายอักขระ */
+		  pos = wc_dict_iter_pos_posid2str (&iter_pos, id);
 
-                  printf ("%d,%s ", id, pos);
-                }
-            }
-          printf ("\n");
-        }
+		  printf ("%d,%s ", id, pos);
+		}
+	    }
+	  printf ("\n");
+	}
       /* เลื่อน p ไปตัวถัดไป */
       p++;
     }

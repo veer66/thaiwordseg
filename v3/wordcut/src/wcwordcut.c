@@ -472,6 +472,18 @@ wc_wordcut_init(WcWordcut *self,WC_STATUS *error)
 
 }
 
+void 
+wc_wordcut_init_with_dictfile(WcWordcut *self,const char *dict_filename,WC_STATUS *error)
+{
+  self->ext_dict=WC_FALSE;
+  self->dict=wc_dict_new();
+  if (wc_dict_load(self->dict,dict_filename)==WC_RET_NORMAL)
+    *error=WC_RET_NORMAL;
+  else
+    *error=WC_RET_ERROR;
+
+}
+
 WcWordcut*
 wc_wordcut_new()
 {
@@ -479,6 +491,17 @@ wc_wordcut_new()
   WC_STATUS error;
   self=WC_NEW(WcWordcut);
   wc_wordcut_init(self,&error);
+  if (error==WC_RET_ERROR) return NULL;
+  return self;
+}
+
+WcWordcut*
+wc_wordcut_new_with_dictfile(const char *dict_filename)
+{
+  WcWordcut *self;
+  WC_STATUS error;
+  self=WC_NEW(WcWordcut);
+  wc_wordcut_init_with_dictfile(self,dict_filename,&error);
   if (error==WC_RET_ERROR) return NULL;
   return self;
 }

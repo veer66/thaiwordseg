@@ -26,27 +26,27 @@ main ()
 
       alen = wc_dict_map_assoc_len (&map, i);
       printf ("ตำแหน่งของอักษรตัวหลัง=%d,จำนวนของคำที่ลงท้ายที่ตำแหน่งนี้=%d",
-              i, alen);
+	      i, alen);
       for (j = 0; j < alen; j++)
-        {
-          int start;
-          /* การนำวัตถุ WcDictIterPos มาจาก WcDictMap */
-          pos = wc_dict_map_assoc_pos_at (&map, i, j);
+	{
+	  int start;
+	  /* การนำวัตถุ WcDictIterPos มาจาก WcDictMap */
+	  pos = wc_dict_map_assoc_pos_at (&map, i, j);
 
-          /* การอ่านตำแหน่งเริ่มต้น */
-          start = wc_dict_map_assoc_at (&map, i, j);
-          for (k = 0; k < pos->len; k++)
-            {
-              wc_byte id;
-              const char *pos_str;
-              /* การใช้งาน WcDictIterPos */
-              wc_dict_iter_pos_posid (pos, k, &id);
-              pos_str = wc_dict_iter_pos_posid2str (pos, id);
+	  /* การอ่านตำแหน่งเริ่มต้น */
+	  start = wc_dict_map_assoc_at (&map, i, j);
+	  for (k = 0; k < pos->len; k++)
+	    {
+	      wc_byte id;
+	      const char *pos_str;
+	      /* การใช้งาน WcDictIterPos */
+	      wc_dict_iter_pos_posid (pos, k, &id);
+	      pos_str = wc_dict_iter_pos_posid2str (pos, id);
 
-              printf (" <จุดเริ่มต้น=%d,รหัสเลข=%d,รหัสอักษร=%s> ", start, id,
-                      pos_str);
-            }
-        }
+	      printf (" <จุดเริ่มต้น=%d,รหัสเลข=%d,รหัสอักษร=%s> ", start, id,
+		      pos_str);
+	    }
+	}
       printf ("\n");
     }
   /* ทำลายวัตถุของคลาส WcDictMap */

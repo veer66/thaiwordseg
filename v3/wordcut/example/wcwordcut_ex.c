@@ -1,33 +1,37 @@
 #include<wordcut/wcwordcut.h>
-int 
-main(int argc,char **argv)
+int
+main (int argc, char **argv)
 {
+  /* การประกาศตัวแปร */
 #define MAX_SIZE 1024
   WcWordcut wordcut;
   WcWordcutResult result;
   char out[MAX_SIZE];
   char *str;
-  int n,i;
-  WcDict dict;
-  if (wc_dict_load(&dict,"../data/dict.etd")!=WC_RET_NORMAL)
+  int i;
+  WC_STATUS e;
+
+
+  /* สร้าง WcWordcut */
+  wc_wordcut_init (&wordcut, &e);
+  if (e != WC_RET_NORMAL)
     {
-      fprintf(stderr,"Cound not load dictionary.\n");
-      exit(1);
+      printf ("Could not initialize wordcut\n");
+      exit (1);
+    }
+  str = "ตากลมผมยาว";
+
+  /* สั่งตัดคำได้ผลลัพธ์เป็น WcWordcutResult */
+  wc_wordcut_cut (&wordcut, str, strlen (str), &result);
+  for (i = 0; i < wc_wordcut_result_len (&result); i++)
+    {
+      /* นำรูปของคำออกจาก WcWordcutResult */
+      wc_wordcut_result_surface_at (&result, i, out, MAX_SIZE);
+      printf ("%s\n", out);
     }
 
-  wc_wordcut_init_with_dict(&wordcut,&dict);
-
-  str="ตากลมผมยาว";
-  n=1;
-
-  wc_wordcut_cut(&wordcut,str,strlen(str),&result);
-  for (i=0;i<wc_wordcut_result_len(&result);i++)
-    {
-      wc_wordcut_result_surface_at(&result,i,out,MAX_SIZE);
-      printf ("Output=%s\n",out);
-    }
-  wc_wordcut_result_destroy(&result);
-  wc_wordcut_destroy(&wordcut);
-  wc_dict_destroy(&dict);
+  /* ทำลาย WcWordcut และ WcWordcutResult */
+  wc_wordcut_result_destroy (&result);
+  wc_wordcut_destroy (&wordcut);
   return 0;
 }
