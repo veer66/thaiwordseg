@@ -36,6 +36,11 @@
 #ifndef __WORDCUT_H__
 #define __WORDCUT_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <wordcut/wordcut_dict.h>
 
 typedef struct
@@ -55,5 +60,9 @@ int wordcut_init(Wordcut *self,const char *dict_filename);
 void wordcut_cut(Wordcut *self,const char *str,WordcutResult *result);
 void wordcut_close(Wordcut *self);
 void wordcut_result_close(WordcutResult *self);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

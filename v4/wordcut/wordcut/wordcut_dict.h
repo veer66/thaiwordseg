@@ -38,6 +38,11 @@
 #include<stdint.h>
 #include<stdlib.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef struct {
     size_t size;
     uint8_t *data;
@@ -57,5 +62,10 @@ int wordcut_dict_init(WordcutDict *self,const char *filename);
 void wordcut_dict_close(WordcutDict *self);
 void wordcut_dict_node(WordcutDictNode *self,WordcutDict *dict);
 int wordcut_dict_walk(WordcutDictNode *node,unsigned char key);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

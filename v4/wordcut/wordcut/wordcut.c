@@ -390,10 +390,7 @@ wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
 		    cc++;
 	       }
 	  }
-     }
-
-     
-
+     }   
 
      result->count=cc;
     
