@@ -30,6 +30,7 @@ AC_OUTPUT(
 	example/Makefile
 	data/Makefile
 	src/Makefile 
+	doc/Makefile
 	src/encoder/Makefile 
 	src/util/Makefile 
 	include/Makefile 
