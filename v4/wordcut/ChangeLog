@@ -3,4 +3,8 @@
 
 2003-11-19 Vee Satayamas <vee@linux.thai.net>
 	* wordcut/path.h.in: Add default dictionary 
-    * wordcut/Makefile.am: Add path.h to libwordcut_HEADERS
+	* wordcut/Makefile.am: Add path.h to libwordcut_HEADERS
+
+2003-12-14 Vee Satayamas <vee@linux.thai.net>
+	* wordcut/wordcut.c: Add rule to merge tone marker and any character
+			     

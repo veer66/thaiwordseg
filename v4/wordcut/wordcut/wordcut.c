@@ -40,6 +40,15 @@
 
 #include <wordcut/wordcut.h>
 
+static void
+dump_marker(int *marker,size_t size)
+{
+     size_t i;
+     for(i=0;i<size;i++)  {
+	  printf("%d ",marker[i]);
+     }
+     printf ("\n");
+}
 
 static int*
 mk_morpho_chunk_tab(const char* str,size_t len)
@@ -90,6 +99,10 @@ mk_morpho_chunk_tab(const char* str,size_t len)
 	       buf=2;
 	  }
 
+	  if(buf<2 && p[0]>='è' && p[0]>='ë') {
+	       buf=2;
+	  }
+
 	  if(buf<4 && p[3] =='ì') {
 	       buf=4;
 	  }
@@ -133,13 +146,9 @@ mk_morpho_chunk_tab(const char* str,size_t len)
 		    tab[pre_stop]=c;
 	       }
 	  }
-
-/*        printf ("!!! ");
-	  for(x=0;x<len;x++) {
-	  printf("[%d]",tab[x]);
-	  } printf ("\n");  */
      }
 
+/*      dump_marker(tab,len+1); */
 
      free(bs);
      return tab;
@@ -214,15 +223,6 @@ dump_path(PathInfo *path,size_t len)
 }
 
 
-static void
-dump_marker(int *marker,size_t size)
-{
-     size_t i;
-     for(i=0;i<size;i++)  {
-	  printf("%d ",marker[i]);
-     }
-     printf ("\n");
-}
 
 void
 wordcut_cut(Wordcut *self,const char *str,WordcutResult *result)
