@@ -20,6 +20,9 @@ main(int argc,char** argv)
   FILE *fin,*fout;
   char bin[IN_SIZE],bout[OUT_SIZE];
   char delimiter[]="|";
+  int del_len;
+  WcWordcut wordcut;
+  WC_STATUS error;
 
   if (argc==2 && ( strcasecmp(argv[1],"-h")==0 || strcasecmp(argv[1],"--help")==0))
     {
@@ -27,9 +30,7 @@ main(int argc,char** argv)
       exit(0);
     }
 
-  int del_len;
-  WcWordcut wordcut;
-  WC_STATUS error;
+
   fin=stdin;
   fout=stdout;
   wc_wordcut_init(&wordcut,&error);
