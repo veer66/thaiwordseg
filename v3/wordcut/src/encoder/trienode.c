@@ -28,10 +28,7 @@ void
 trie_node_destroy(TrieNode *self)
 {
   size_t i;
-  if (self->pos!=NULL) 
-    {
-      free(self->pos);
-    }
+
   for(i=0;i<MAPSIZE;i++) 
     {
       if (self->child[i]!=NULL) 

@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include"dictionary.h"
 #include"trie.h"
-
+#ifdef DEBUG
 static void 
 test_dict(const char *filename)
 {
@@ -12,7 +12,10 @@ test_dict(const char *filename)
   printf ("%f\n",dictionary_avg_pos_per_word(&dict)); 
   dictionary_destroy(&dict);
 }
+#endif
 
+
+#ifdef DEBUG
 static void 
 test_trie(const char *dictfile)
 {
@@ -26,7 +29,9 @@ test_trie(const char *dictfile)
   trie_delete(trie);
   dictionary_delete(dict); 
 }
+#endif
 
+#ifdef DEBUG
 static void
 test_write_trie(const char *dict_file)
 {
@@ -45,6 +50,7 @@ test_write_trie(const char *dict_file)
   trie_delete(trie);
   dictionary_delete(dict);
 }
+#endif
 
 static void
 encode(const char *dict_file,const char *target)

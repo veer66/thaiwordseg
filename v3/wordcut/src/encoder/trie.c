@@ -101,7 +101,7 @@ sort_key(TrieNode *node)
     }
 
 }
-
+#ifdef DEBUG
 static size_t 
 seq_node_size(SeqNode* node)
 {
@@ -125,7 +125,7 @@ pos_node_size(PosNode* node)
   size=size+node->pos_len;
   return size;
 }
-
+#endif
 static void
 pos_node_write(PosNode *node,FILE *fp)
 {
@@ -180,11 +180,14 @@ bin_node_write(BinNode *node,FILE *fp)
     }
 }
 
+void
 dump_node(TrieNode *node)
 {
   int i;
-  printf("Addr=%ld\tCount=%d\tTerm=%c\n"
-	 ,(unsigned int)node,node->count,node->terminator ? 'T' : 'F');
+  printf("Addr=%dl\tCount=%dl\tTerm=%c\n", 
+	 (unsigned int)node , 
+	 node->count ,
+	 (node->terminator ? 'T' : 'F'));
   /* list */
   for(i=0;i<node->count;i++)
     {
@@ -192,6 +195,7 @@ dump_node(TrieNode *node)
     }
   printf("\n");
 }
+
 
 static long
 write_trie(TrieNode *node,FILE *fp,long start)
@@ -284,7 +288,7 @@ write_trie(TrieNode *node,FILE *fp,long start)
 	      bin_node.key[i]=node->list[i];
 	      child_pos=write_trie(node->child[node->list[i]],fp,start);
 	      bin_node.child[i]=child_pos;
-	      printf ("Bin child_pos=%d\n",child_pos);
+	      printf ("Bin child_pos=%ld\n",child_pos);
 	    }
 	  buf=ftell(fp);
 	 
@@ -365,13 +369,13 @@ trie_write(Trie* self,const char* output_filename)
   size=ftell(fp)-start;
 
 
-  printf("Size=%lX\n",size);
+  printf("Size=%X\n",size);
   printf("size_pos=%ld\n",size_pos);
   fseek(fp,size_pos,SEEK_SET);
   fwrite(&size,4,1,fp);
 
 
-  printf ("RET = %d\n",ret);
+  printf ("RET = %ld\n",ret);
   root=ret;
   printf("root_pos=%ld\troot=%d\n",root_pos,root);
   fseek(fp,root_pos,SEEK_SET);
