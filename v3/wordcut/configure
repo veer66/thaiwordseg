@@ -1614,7 +1614,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=wordcut
- VERSION=0.1.1pre3
+ VERSION=0.1.2
 
 
 cat >>confdefs.h <<_ACEOF

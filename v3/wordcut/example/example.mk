@@ -1,4 +1,5 @@
-CC=gcc LDFLAGS=`pkg-config wordcut --libs`
+CC=gcc 
+	LDFLAGS=`pkg-config wordcut --libs`
 CFLAGS=`pkg-config wordcut --cflags` -Wall -g
 all : test1 wcdict_ex wcdictiter_ex wcdictiterpos_ex wcdictmap_ex wcwordcut_ex
 test1 : test1.c

@@ -19,13 +19,6 @@ typedef struct wc_dict_map_tok_pos_t
 
 typedef struct wc_dict_map_t
 {
-
-  /* 
-   * index is an index from last position of word
-   * which points to the element of tok which is 
-   * associated last position of word
-   */
-
   int* index;  
   WcDictMapTokPos *tok;
   size_t strlen;

@@ -17,7 +17,15 @@ Group:       Development/Libraries
 Requires:	%{name} = %{version}
 
 %description devel
-Static libraries and header files for wordcut
+Header files for wordcut
+
+%package data
+Summary:	 wordcut data
+Group:       Development/Libraries
+Requires:	%{name} = %{version}
+
+%description data
+Data (such as dictionary) for wordcut
   
 %prep
 %setup -q -n wordcut-%{version}
@@ -51,15 +59,16 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-, root, root)
 
-%doc AUTHORS COPYING ChangeLog NEWS NEWS.th README TODO TODO.th
+%doc AUTHORS COPYING ChangeLog NEWS README
 %{_bindir}/*
 %{_libdir}/lib*.so.*
-%{_datadir}/*
 
 %files devel
 %defattr(-, root, root)
-
-%{_libdir}/lib*.so
 %{_libdir}/*a
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/wordcut	
+
+%files data
+%defattr(-, root, root)
+%{_datadir}/*
