@@ -1,6 +1,6 @@
+
 /* 
- *
- * Copyright (C) 2003 Vee Satayamas
+ * Copyright (C) 2004 Vee Satayamas
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or 
@@ -29,15 +29,55 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  */
 
 
+#include<wordcut/xmalloc.h>
+#include<wordcut/wordcut_list.h>
 
-#ifndef __XMALLOC_H__
-#define __XMALLOC_H__
-#include<stdlib.h>
-void* xmalloc(size_t size);
-void* xrealloc(void *ptr,size_t size);
-#endif
+int
+wordcut_list_init(WordcutList *self, size_t max_size)
+{
+    if (max_size <= 0) 
+    {
+        self->content = NULL;
+        return 1;
+    }
+    self->max_size = max_size;
+    self->size = 0;
+    self->content = xmalloc(sizeof(void *) * self->max_size);  
+    return 0;
+}
 
+int 
+wordcut_list_append(WordcutList *self, void* data)
+{
+    if(self->size == self->max_size) 
+    {
+        self->max_size = self->max_size * 2;
+        self->content = xrealloc(self->content, sizeof(void *) * self->max_size);
+    }
+    self->content[self->size] = data;
+    ++self->size;
+    return 0;
+}
+
+int 
+wordcut_list_destroy(WordcutList *self)
+{
+    free(self->content);
+    return 0;
+}
+/*
+int main ()
+{
+    WordcutList lst;
+    int i;
+    wordcut_list_init(&lst,10);    
+    for(i=0;i<20;i++) {    
+        wordcut_list_append(&lst, (void*)i);
+    }
+    printf ("%d\n", wordcut_list_get(&lst,10) );
+    wordcut_list_destroy(&lst);    
+    return 0;    
+} */

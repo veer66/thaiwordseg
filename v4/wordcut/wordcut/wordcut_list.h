@@ -1,6 +1,5 @@
 /* 
- *
- * Copyright (C) 2003 Vee Satayamas
+ * Copyright (C) 2004 Vee Satayamas
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or 
@@ -29,15 +28,17 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  */
+#ifndef __WORDCUT_LIST_H__
+#define __WORDCUT_LIST_H__
 
-
-
-#ifndef __XMALLOC_H__
-#define __XMALLOC_H__
 #include<stdlib.h>
-void* xmalloc(size_t size);
-void* xrealloc(void *ptr,size_t size);
-#endif
+typedef struct
+{
+    void **content;
+    size_t max_size,size;
+} WordcutList;
 
+#define wordcut_list_get(obj,index) (obj)->content[(index)]
+
+#endif 
