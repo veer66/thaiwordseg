@@ -506,24 +506,24 @@ wi_wordcut_delete(WiWordcut *self)
   free(self);
 }
 
-WiAnswer*
+WiResult*
 wi_wordcut_cut(WiWordcut *self,const char* str,size_t len)
 {
-  WiAnswer *answer;
+  WiResult *result;
   WiForest forest;
   WiPath path;
-  MEMCHK(answer=(WiAnswer*)malloc(sizeof(WiAnswer)));
+  MEMCHK(result=(WiResult*)malloc(sizeof(WiResult)));
   forest=str2forest(self->dict,str,len);
   forest2path(forest,len,&path);
-  answer->path=path;
-  answer->len=len;
-  MEMCHK(answer->str=strdup(str));
+  result->path=path;
+  result->len=len;
+  MEMCHK(result->str=strdup(str));
   free(forest);
-  return answer;
+  return result;
 }
 
 void
-wi_answer_delete(WiAnswer *self)
+wi_result_delete(WiResukt *self)
 {
   free(self->str);
   free(self->path);
@@ -531,7 +531,35 @@ wi_answer_delete(WiAnswer *self)
 }
 
 const char* 
-wi_answer_fetch_string(WiAnswer *answer,const char* delim,size_t delim_len)
+wi_result_fetch_string(WiAnswer *result,const char* delim,size_t delim_len)
 {
-  return path2str(answer->str,answer->path,answer->len,delim,delim_len);
+  return path2str(result->str
+		  ,result->path
+		  ,result->len
+		  ,delim,delim_len);
+}
+
+typedef struct wi_string_array 
+{
+  char** elements;
+  size_t size;
+} WiStringArray;
+
+WiStringArray*
+wi_result_fetch_array(WiAnswer *result)
+{
+  WiStringArray *array;
+  int token_count;
+  size_t len=result->len;
+  char* str=result->str;
+  int* path=result->path;
+  
+  MEMCHK(array=(WiStringArray*)malloc(sizeof(WiStringArray)));
+  /* count delimiters */
+  
+  for(i=len,token_scount=0;i!=0;i=path[i],token_count++);
+  MEMCHK(array->elements=(char **)malloc(sizeof(char*)*token_count));
+  
+  
+
 }

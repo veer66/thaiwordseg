@@ -19,12 +19,12 @@ main (int argc, char **argv)
   free(ans);
   free (dict);*/
   WiWordcut *wordcut;
-  WiAnswer* answer;
+  WiResult* result;
   char* str = argv[1];
   wordcut=wi_wordcut_new("test5.out");
-  answer=wi_wordcut_cut(wordcut,str,strlen(str));
-  printf("%s\n",wi_answer_fetch_string(answer,"|",1));
-  wi_answer_delete(answer);
+  result=wi_wordcut_cut(wordcut,str,strlen(str));
+  printf("%s\n",wi_result_fetch_string(result,"|",1));
+  wi_result_delete(result);
   wi_wordcut_delete(wordcut);
   return 0;
 }
