@@ -1,0 +1,64 @@
+Name:		 wordcut
+Summary:	 Thai Word Segmentation
+Version:	 @VERSION@
+Release:	 1
+License:	 GPL
+Group:       Development/Libraries
+BuildRoot:	 /var/tmp/%{name}-%{version}-root
+URL:		 http://thaiwordseg.sourceforge.net/
+
+%description
+Word segmentation package for Thai Language
+
+%package devel
+Summary:	 wordcut devel
+Group:       Development/Libraries
+Requires:	%{name} = %{version}
+
+%description devel
+Static libraries and header files for wordcut
+  
+%prep
+%setup -q -n wordcut-%{version}
+
+%build
+CFLAGS="$RPM_OPT_FLAGS"
+./configure --prefix=%{_prefix} \
+    --bindir=%{_bindir} --mandir=%{_mandir} \
+    --localstatedir=%{_localstatedir} --libdir=%{_libdir} \
+    --datadir=%{_datadir} --includedir=%{_includedir} \
+    --sysconfdir=%{_sysconfdir} 
+make
+
+%install
+rm -rf $RPM_BUILD_ROOT
+
+make prefix=$RPM_BUILD_ROOT%{_prefix} bindir=$RPM_BUILD_ROOT%{_bindir} \
+    mandir=$RPM_BUILD_ROOT%{_mandir} libdir=$RPM_BUILD_ROOT%{_libdir} \
+    localstatedir=$RPM_BUILD_ROOT%{_localstatedir} \
+    datadir=$RPM_BUILD_ROOT%{_datadir} \
+    includedir=$RPM_BUILD_ROOT%{_includedir} \
+    sysconfdir=$RPM_BUILD_ROOT%{_sysconfdir} install
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%files
+%defattr(-, root, root)
+
+%doc AUTHORS COPYING ChangeLog NEWS NEWS.th README TODO TODO.th
+%{_bindir}/*
+%{_libdir}/lib*.so.*
+%{_datadir}/*
+
+%files devel
+%defattr(-, root, root)
+
+%{_libdir}/lib*.so
+%{_libdir}/*a
+%{_libdir}/pkgconfig/*.pc
+%{_includedir}/wordcut	
