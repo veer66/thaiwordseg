@@ -9,10 +9,10 @@ VPATH = $(srcdir)
 
 CC = gcc
 
-CFLAGS   = -fPIC -g -O2   -I/home/vee/usr/include  
+CFLAGS   = -fPIC -g -O2    
 CPPFLAGS = -I. -I$(hdrdir) -I$(srcdir)   
 CXXFLAGS = $(CFLAGS)
-DLDFLAGS =  -L$(topdir) -L$(exec_prefix)/lib   -L/home/vee/usr/lib -lwordcut  
+DLDFLAGS =  -L$(topdir) -L$(exec_prefix)/lib   -lwordcut  
 LDSHARED = gcc -shared 
 LIBPATH = 
 

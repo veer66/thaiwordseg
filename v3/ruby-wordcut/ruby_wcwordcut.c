@@ -39,7 +39,7 @@ f_wc_wordcut_cutline(VALUE obj,VALUE str)
   if (RSTRING(str)->len<=0)
     return rb_str_new2("");
   in=RSTRING(str)->ptr;
-  buffer_size=RSTRING(str)->len*2;
+  buffer_size=RSTRING(str)->len*2+1;
   buffer=ALLOC_N(char,buffer_size);
   if(wc_wordcut_cutline(self,in,buffer,buffer_size,delimiter,del_len)==
      WC_RET_ERROR)     
