@@ -1,6 +1,7 @@
 #ifndef __WORDCUT_PATH_H__
 #define __WORDCUT_PATH_H__
 
-#define WORDCUT_DATA_PATH "@prefix@/share/wordcut"
+#define WORDCUT_DATA_PATH     "@prefix@/share/@PACKAGE@"
+#define WORDCUT_DEFAULT_DICT  "@prefix@/share/@PACKAGE@/tdict.wcd"
 
 #endif 

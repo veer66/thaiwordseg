@@ -1,2 +1,6 @@
 2003-07-24 Vee Satayamas <virasj@users.sourceforge.net>
 	* initialize changelog for v4/wordcut
+
+2003-11-19 Vee Satayamas <vee@linux.thai.net>
+	* wordcut/path.h.in: Add default dictionary 
+    * wordcut/Makefile.am: Add path.h to libwordcut_HEADERS
