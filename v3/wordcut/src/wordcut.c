@@ -30,7 +30,6 @@ main(int argc,char** argv)
       exit(0);
     }
 
-
   fin=stdin;
   fout=stdout;
   wc_wordcut_init(&wordcut,&error);

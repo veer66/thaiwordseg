@@ -2,24 +2,24 @@
 
 typedef struct 
 {
-  gint start;
+  int start;
   WcDictIter iter;
 } WordSeed;
 
 typedef struct
 {
-  gint start;
+  int start;
   WcDictIterPos pos;
 } RawWord;
 
 WcDictMap*
-wc_dict_get_map(WcDict *self,const gchar *str,gsize len)
+wc_dict_get_map(WcDict *self,const char *str,size_t len)
 {
   return wc_dict_map_new(self,str,len);
 }
 
 void
-wc_dict_map_init(WcDictMap *self,WcDict *dict,const gchar *str,gsize len)
+wc_dict_map_init(WcDictMap *self,WcDict *dict,const char *str,size_t len)
 {
   gint i,j;
   WordSeed *pool;

@@ -4,21 +4,21 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include<glib.h>
+#include<wordcut/wccommon.h>
 
 #define WC_WORDUNIT_NULL   -1
 
 typedef struct wc_wordunit_map
 {
-  gsize len;
-  gint *assoc_tab,*break_tab;
+  size_t len;
+  int *assoc_tab,*break_tab;
 } WcWordunitMap;
 
-gint wc_wordunit_map_assoc(WcWordunitMap *map,gint stop);
-gboolean wc_wordunit_map_break(WcWordunitMap *map,gint start,gint stop);
+int wc_wordunit_map_assoc(WcWordunitMap *map,int stop);
+wc_boolean wc_wordunit_map_break(WcWordunitMap *map,int start,int stop);
 void wc_wordunit_map_delete(WcWordunitMap *self);
-WcWordunitMap* wc_wordunit_find(const gchar* str,gsize len);
-WcWordunitMap* wc_wordunit_map_new(const gchar* str,gsize len);
-void wc_wordunit_map_init (WcWordunitMap *self,const gchar* str,gsize len);
+WcWordunitMap* wc_wordunit_find(const char* str,size_t len);
+WcWordunitMap* wc_wordunit_map_new(const char* str,size_t len);
+void wc_wordunit_map_init (WcWordunitMap *self,const char* str,size_t len);
 
 #endif

@@ -1,12 +1,11 @@
-
 #include<wordcut/wcwordunit.h>
-
+#include<assert.h>
 #define NOT_FOUND -1
 #define BACKGROUND 0
 #define DUMMY -1
 
-static gint 
-group_karun(const gchar* p,gsize len)
+static int 
+group_karun(const char* p,size_t len)
 {
   if (len >= 4)
     {
@@ -15,8 +14,8 @@ group_karun(const gchar* p,gsize len)
   return NOT_FOUND;
 }
 
-static gint
-group_follow_vowel(const gchar* p,gsize len)
+static int
+group_follow_vowel(const char* p,size_t len)
 {
   if (len>=2)
     {
@@ -36,8 +35,8 @@ group_follow_vowel(const gchar* p,gsize len)
   return NOT_FOUND;
 }
 
-static gint 
-group_tone(const gchar *p,gsize len)
+static int 
+group_tone(const char *p,size_t len)
 {
   if (len>=2)
     {
@@ -53,8 +52,8 @@ group_tone(const gchar *p,gsize len)
   return NOT_FOUND;
 }
 
-static gint
-group_maihun(const gchar *p,gsize len)
+static int
+group_maihun(const char *p,size_t len)
 {
   if (len>=3)
     {
@@ -68,8 +67,8 @@ group_maihun(const gchar *p,gsize len)
   return NOT_FOUND;
 }
 
-static gint
-group_lead_vowel(const gchar *p,gsize len)
+static int
+group_lead_vowel(const char *p,size_t len)
 {
   if(len>=2)
     {
@@ -89,7 +88,7 @@ group_lead_vowel(const gchar *p,gsize len)
   return NOT_FOUND;
 }
 
-static gint
+static int
 group_ko(const char *p,size_t len)
 {
   if (len>=2)
@@ -102,8 +101,8 @@ group_ko(const char *p,size_t len)
   return NOT_FOUND;
 }
 
-static gint
-group_ad(const gchar *p,gsize len)
+static  int
+group_ad(const char *p,size_t len)
 {
   if (len>=4)
     {
@@ -116,22 +115,26 @@ group_ad(const gchar *p,gsize len)
 }
 
 
+#ifdef DEBUG
+
 static void
-dump_tab(gint tab[],gsize len)
+dump_tab(int tab[],size_t len)
 {
-  gint i;
+  int i;
   for(i=0;i<len;i++)
     {
-      g_print("%d",tab[i]);
+      printf("%d",tab[i]);
     }
-  g_print("\n");
+  printf("\n");
 }
 
+#endif
+
 static void 
-marktab(gint tab[],gint *c_marker,gint start,gint offset,gsize len)
+marktab(int tab[],int *c_marker,int start,int offset,size_t len)
 {
 
-  gint stop,marker,i;
+  int stop,marker,i;
   stop=start+offset;
 
   (*c_marker)++;
@@ -149,8 +152,8 @@ marktab(gint tab[],gint *c_marker,gint start,gint offset,gsize len)
 
   if(tab[stop]!=BACKGROUND)
     {
-      gint old_marker=tab[stop];
-      gint j;
+      int old_marker=tab[stop];
+      int j;
       for(j=stop;j<len && tab[j]==old_marker;j++)
 	tab[j]=marker;      
     }
@@ -163,12 +166,12 @@ marktab(gint tab[],gint *c_marker,gint start,gint offset,gsize len)
 
 
 
-gint*
-tab2map(gint tab[],gsize len)
+int*
+tab2map(int tab[],size_t len)
 {
-  gint i,prev=BACKGROUND,start=DUMMY,stop=DUMMY;
+  int i,prev=BACKGROUND,start=DUMMY,stop=DUMMY;
   
-  gint *map=g_new(gint,len);
+  int *map=WC_NEW_N(int,len);
   for(i=0;i<len;i++) map[i]=WC_WORDUNIT_NULL;
   for(i=0;i<len;i++) 
     {
@@ -185,15 +188,15 @@ tab2map(gint tab[],gsize len)
   return map;
 }
 
-gint
-wc_wordunit_map_assoc(WcWordunitMap *map,gint stop)
+int
+wc_wordunit_map_assoc(WcWordunitMap *map,int stop)
 {
   if (stop>=map->len) return WC_WORDUNIT_NULL;
   return map->assoc_tab[stop];
 }
 
-gboolean
-wc_wordunit_map_break(WcWordunitMap *map,gint start,gint stop)
+wc_boolean
+wc_wordunit_map_break(WcWordunitMap *map,int start,int stop)
 {
   if (start<=stop && stop<map->len)
     {
@@ -202,12 +205,12 @@ wc_wordunit_map_break(WcWordunitMap *map,gint start,gint stop)
 	{
 	  if (start!=0 && map->break_tab[start]==map->break_tab[start-1])
 	    {
-	      return TRUE;
+	      return WC_TRUE;
 	    }
 	  else if (stop!=map->len-1 && map->break_tab[stop]==
 		   map->break_tab[stop+1])
 	    {
-	      return TRUE;
+	      return WC_TRUE;
 	    }
 	  
 	} 
@@ -216,17 +219,17 @@ wc_wordunit_map_break(WcWordunitMap *map,gint start,gint stop)
 	  if(map->break_tab[start]!=BACKGROUND && start!=0 && 
 	     map->break_tab[start-1]==map->break_tab[start])
 	    {
-	      return TRUE;
+	      return WC_TRUE;
 	    }
 	  else if(map->break_tab[stop]!=BACKGROUND 
 		  && stop!=map->len-1 
 		  && map->break_tab[stop+1]==map->break_tab[stop])
 	    {
-	      return TRUE;
+	      return WC_TRUE;
 	    }
 	}
     }
-  return FALSE;
+  return WC_FALSE;
 }
 
 void
@@ -239,22 +242,22 @@ wc_wordunit_map_delete(WcWordunitMap *self)
 
 
 void
-wc_wordunit_map_init (WcWordunitMap *self,const gchar* str,gsize len)
+wc_wordunit_map_init (WcWordunitMap *self,const char* str,size_t len)
 {
-  const gchar* p;
-  gint offset,start;
+  const char* p;
+  int offset,start;
   /* 
    * tab is equal to break tab 
    * map is equal to assoc tab
    */
-  gint *tab,*assoc_tab; 
-  gint marker=0;
-  gsize llen;
-  tab=g_new(gint,len+1);
-  memset(tab,0,sizeof(gint)*(len+1));
+  int *tab,*assoc_tab; 
+  int marker=0;
+  size_t llen;
+  tab=WC_NEW_N(int,len+1);
+  memset(tab,0,sizeof(int)*(len+1));
   for(llen=len,p=str,start=0;llen>0;p++,llen--,start++)
     {
-      g_assert(p!='\0');
+      assert(p!='\0');
       if ((offset=group_ad(p,llen))!=NOT_FOUND)
 	marktab(tab,&marker,start,offset,len);
 
@@ -292,15 +295,15 @@ wc_wordunit_map_init (WcWordunitMap *self,const gchar* str,gsize len)
 }
 
 WcWordunitMap*
-wc_wordunit_map_new(const gchar* str,gsize len)
+wc_wordunit_map_new(const char* str,size_t len)
 {
-  WcWordunitMap *self=g_new(WcWordunitMap,1);
+  WcWordunitMap *self=WC_NEW(WcWordunitMap);
   wc_wordunit_map_init(self,str,len);
   return self;
 }
 
 WcWordunitMap*
-wc_wordunit_find(const gchar* str,gsize len)
+wc_wordunit_find(const char* str,size_t len)
 {
   return wc_wordunit_map_new(str,len);
 }

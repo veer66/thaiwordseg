@@ -15,7 +15,7 @@ pos_array_init (PosArray *self)
 {
   self->size = DEFAULT_POS_PER_WORD;
   self->length = 0;
-  self->array = g_new (char, self->size);
+  self->array = WC_NEW_N (char, self->size);
   printf ("Array ALLOC = %X Self=%X\n",(unsigned int)self->array,
 	  (unsigned int)self);
 }

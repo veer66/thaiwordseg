@@ -384,8 +384,6 @@ wc_wordcut_result_str(WcWordcutResult* self , gchar *out , gsize out_size   ,
 #ifdef DEBUG
       printf("Stop=%d\n",self->index[i]);
       printf ("Start=%d\n",self->tab[self->index[i]].start);
-
-
 #endif      
       for(j= self->tab[self->index[i]].start ; j<=self->index[i] ; j++)	    
 	{
@@ -408,8 +406,8 @@ wc_wordcut_cut(WcWordcut *self,const gchar* str,gint len,WcWordcutResult *result
   
   result->tab=g_new(WcWordcutTableElement,len);
 
-  if (len > 1)
-    {
+  /*  if (len > 1)
+      {*/
       for(i=0;i<len;i++)
 	{
 	  select_path(&dict_map,&wu_map,str[i],result->tab,i);
@@ -434,9 +432,9 @@ wc_wordcut_cut(WcWordcut *self,const gchar* str,gint len,WcWordcutResult *result
 
 	}
       result->n=c;
-      join_unk(result);
-    } 
-  else
+      /*      join_unk(result); */
+      /*  } 
+   else
     {
       result->n=1;
       result->index=g_new(gint,1);
@@ -446,7 +444,7 @@ wc_wordcut_cut(WcWordcut *self,const gchar* str,gint len,WcWordcutResult *result
       result->tab->start=1;
       result->tab->type=WC_WORD_TYPE_UNK;
       result->str=g_strdup(str);
-    }
+      }*/
 }
 
 void
