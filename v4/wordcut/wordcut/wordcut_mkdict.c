@@ -309,7 +309,7 @@ int main (int argc,char** argv) {
 
     
     if (argc<3) {
-        fprintf (stderr,"Usage: encoder (-v) <plain dict> <encoded dict>\n");
+        fprintf (stderr,"Usage: wordcut_mkdict (-v) <plain dict> <encoded dict>\n");
         exit(1);
     }
 
@@ -317,7 +317,7 @@ int main (int argc,char** argv) {
         if (strcmp(argv[1],"-v")==0) {
             verbose=1;
         } else {
-            fprintf (stderr,"Usage: encoder (-v) <plain dict> <encoded dict>\n");
+            fprintf (stderr,"Usage: wordcut_mkdict (-v) <plain dict> <encoded dict>\n");
             exit(1);
         }
         fn1=argv[2];
@@ -342,7 +342,7 @@ int main (int argc,char** argv) {
     printf ("\n");
 */
   
-    fp=fopen(fn2,"r");
+    fp=fopen(fn2,"w");
     if (!fp) {
         fprintf (stderr,"%s:%d: Can't open file %s\n",__FILE__,__LINE__,fn2);
         exit(1);
