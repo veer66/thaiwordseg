@@ -185,7 +185,6 @@ wc_dict_map_assoc_pos_at(WcDictMap *self,int stop,int offset)
   if (stop>=self->strlen || self->index[stop]+offset>=self->index[stop+1])
     return NULL;
   return &self->tok[((self->index[stop])+offset)].pos;
-
 }
 
 WcDictMap *

@@ -117,6 +117,7 @@ WC_STATUS wc_wordcut_result_surface_at(WcWordcutResult *self,int p,char *out,siz
       \end{verbatim}
     \item{การอ่านค่าชนิดของคำจากวัตถุ WcWordcutResult}
       \begin{verbatim}
+	/* คืนค่า : NULL ถ้าไม่มีการกำกับชนิดของคำ */
 	const WcDictIterPos* wc_wordcut_result_pos_at(WcWordcutResult *self,int p);
       \end{verbatim}
       \item{การอ่านค่าชนิดของคำตอบจากวัตถุ WcWordcutResult}
@@ -174,5 +175,64 @@ main (int argc, char **argv)
   wc_wordcut_destroy (&wordcut);
   return 0;
 }
+    \end{verbatim}
+  \item{ตัวอย่างการใช้งานคลาส WcWordcutResult และWcWordcut(แสดงชนิดของคำ) }
+    \begin{verbatim}
+#include<wordcut/wcwordcut.h>
+int
+main (int argc, char **argv)
+{
+  /* การประกาศตัวแปร */
+#define MAX_SIZE 1024
+  WcWordcut wordcut;
+  WcWordcutResult result;
+  const WcDictIterPos *pos;
+  char out[MAX_SIZE];
+  char *str;
+  int i;
+  WC_STATUS e;
+
+
+  /* สร้าง WcWordcut */
+  wc_wordcut_init (&wordcut, &e);
+  if (e != WC_RET_NORMAL)
+    {
+      printf ("Could not initialize wordcut\n");
+      exit (1);
+    }
+  str = "ตากลมผมยาว";
+
+  /* สั่งตัดคำได้ผลลัพธ์เป็น WcWordcutResult */
+  wc_wordcut_cut (&wordcut, str, strlen (str), &result);
+  for (i = 0; i < wc_wordcut_result_len (&result); i++)
+    {
+      /* นำรูปของคำออกจาก WcWordcutResult */
+      wc_wordcut_result_surface_at (&result, i, out, MAX_SIZE);
+      printf ("%s", out);
+
+      /* การอ่านค่า WcDictIterPos จาก WcWordcutResult */ 
+      pos = wc_wordcut_result_pos_at (&result, i);
+      if (pos != NULL)
+	{
+	  wc_byte id;
+	  const char *pstr;
+	  int i;
+	  for (i = 0; i < pos->len; i++)
+	    {
+	      /* การอ่านค่าชนิดของคำทีละตัว */
+	      wc_dict_iter_pos_posid (pos, i, &id);
+	      pstr = wc_dict_iter_pos_posid2str (pos, id);
+	      printf (" <%d,%s>", id, pstr);
+	    }
+	}
+      printf ("\n");
+    }
+
+  /* ทำลาย WcWordcut และ WcWordcutResult */
+  wc_wordcut_result_destroy (&result);
+  wc_wordcut_destroy (&wordcut);
+  return 0;
+}
+
     \end{verbatim}
 \end{itemize}

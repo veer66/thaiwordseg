@@ -1,4 +1,7 @@
-2003-01-24  Vee Satayamas  <virasj@users.sourceforge.net>
+2003-03-05  Vee Satayamas <virasj@users.sourceforge.net>
+	* major bug fix in POS from wc_wordcut_result
+
+2003-01-24  Vee Satayamas <virasj@users.sourceforge.net>
 
 	* reorganize modules
 	* encode dictionary into specific format instead of sorting it

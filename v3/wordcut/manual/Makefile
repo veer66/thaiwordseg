@@ -9,7 +9,7 @@ wordcut.pdf : wordcut.dvi
 showdvi : wordcut.dvi
 	xdvi $<
 
-wordcut.dvi : wordcut.tex ref_c_api_wu.tex ref_c_api_wordcut.tex ref_c_api_dict.tex ref_c_api_basic.tex design.tex acknownledge.tex 
+wordcut.dvi : wordcut.tex ref_c_api_wu.tex ref_c_api_wordcut.tex ref_c_api_dict.tex ref_c_api_basic.tex design.tex algorithm.tex acknownledge.tex 
 	latex wordcut
 	latex wordcut
 	bibtex wordcut
@@ -18,6 +18,9 @@ wordcut.dvi : wordcut.tex ref_c_api_wu.tex ref_c_api_wordcut.tex ref_c_api_dict.
 	latex wordcut
 
 acknownledge.tex : acknownledge.th.tex
+	swath -f latex < $< > $@
+
+algorithm.tex : algorithm.th.tex
 	swath -f latex < $< > $@
 
 design.tex : design.th.tex
@@ -38,7 +41,7 @@ ref_c_api_wu.tex : ref_c_api_wu.th.tex
 wordcut.tex : wordcut.th.tex
 	swath -f latex < $< > $@
 clean:
-	rm -f wordcut.tex ref_c_api_wu.tex ref_c_api_wordcut.tex ref_c_api_dict.tex ref_c_api_basic.tex design.tex acknownledge.tex 
+	rm -f wordcut.tex ref_c_api_wu.tex ref_c_api_wordcut.tex ref_c_api_dict.tex ref_c_api_basic.tex design.tex algorithm.tex acknownledge.tex 
 	rm -f *.dvi *.pdf *.aux *.lof *.log *.idx *.ind *.ilg *.toc *.bbl
 update:
 	./autottex.sh wordcut > Makefile
@@ -47,8 +50,8 @@ distclean : clean
 	rm -f *~ *.tar.gz
 
 dist : distclean
-	rm -rf wordcut-20030303
-	mkdir wordcut-20030303
-	for x in * ;do if [ -f $$x ];then cp $$x wordcut-20030303 ;fi ;done
-	tar cvvzf wordcut-20030303.tar.gz wordcut-20030303
-	rm -rf wordcut-20030303
+	rm -rf wordcut-20030304
+	mkdir wordcut-20030304
+	for x in * ;do if [ -f $$x ];then cp $$x wordcut-20030304 ;fi ;done
+	tar cvvzf wordcut-20030304.tar.gz wordcut-20030304
+	rm -rf wordcut-20030304

@@ -3,7 +3,6 @@
 #include<stdlib.h>
 #include<string.h>
 
-
 static void 
 usage()
 {
@@ -39,7 +38,7 @@ main(int argc,char** argv)
   del_len=strlen(delimiter);
   while(fgets(bin,IN_SIZE,fin)!=NULL)
     {
-      wc_wordcut_cutline(&wordcut,bin,bout,OUT_SIZE,delimiter,del_len);
+      wc_wordcut_cutline_tag(&wordcut,bin,bout,OUT_SIZE,delimiter,del_len);
       fputs(bout,fout);
     }
   wc_wordcut_destroy(&wordcut);

@@ -13,19 +13,19 @@
 #endif
 
 #if defined (__STDC__) && __STDC__
-VOID *xmalloc (size_t n);
-VOID *xcalloc (size_t n, size_t s);
-VOID *xrealloc (VOID *p, size_t n);
-char *xstrdup (char *p);
+VOID *wc_xmalloc (size_t n);
+VOID *wc_xcalloc (size_t n, size_t s);
+VOID *wc_xrealloc (VOID *p, size_t n);
+char *wc_xstrdup (char *p);
 #endif
 
 
 #define MEMCHK(mem) if( (mem) == NULL ) { fprintf(stderr,"%s:%d: Out of memory.\n",__FILE__,__LINE__); exit(1); }
 
 
-#define WC_NEW_N(type,size) (type*)xmalloc(sizeof(type)*(size))
-#define WC_NEW(type)(type*)xmalloc(sizeof(type)) 
-#define WC_RENEW(type,data,size)(type *)xrealloc(data,sizeof(type)*size);
+#define WC_NEW_N(type,size) (type*)wc_xmalloc(sizeof(type)*(size))
+#define WC_NEW(type)(type*)wc_xmalloc(sizeof(type)) 
+#define WC_RENEW(type,data,size)(type *)wc_xrealloc(data,sizeof(type)*size);
 
 typedef int wc_boolean;
 
@@ -41,9 +41,10 @@ typedef unsigned char           wc_byte;
 
 #define WC_HALT(msg) { fprintf(WC_ERR_FILE,"%s:%s:%d: %s\n",PACKAGE,__FILE__,__LINE__,(msg)); exit(1); }
 
-#define WC_NEW_STR(len) WC_NEW_N(char,len+1)
+#define WC_NEW_STR(len) (char *)WC_NEW_N(char,len+1)
 
-#define WC_STR_DUP(target,src) { target=WC_NEW_STR(strlen(src)); strcpy(target,src); }
+
+#define WC_STR_DUP(target,src) { target=wc_xstrdup(src); }
 
 
 #define WC_RET_NORMAL 0

@@ -6,10 +6,6 @@ join_front(WcWordcutResult* result,
 	   int stop,
 	   int front_start)
 {
-  
-
-
-
   result->tab[stop].start=front_start;
   result->tab[stop].type=WC_WORD_TYPE_JOIN;
   result->tab[stop].pos=NULL;
@@ -21,9 +17,6 @@ join_back(WcWordcutResult* result,
 	  int start,
 	  int back_stop)
 {
-
-
-
   result->tab[back_stop].start=start;
   result->tab[back_stop].type=WC_WORD_TYPE_JOIN;
   result->tab[back_stop].pos=NULL;
@@ -94,6 +87,24 @@ join_unk(WcWordcutResult *result)
   result->n=c;
 }
 
+static void 
+dup_pos(WcWordcutResult *result)
+{
+  int i,start;
+  const WcDictIterPos *p2;
+  for(i=result->len-1;i>=0;i=start-1)
+    {
+      start=result->tab[i].start;
+      if ((p2=result->tab[i].pos)!=NULL)
+	{
+	  WcDictIterPos *pos=WC_NEW(WcDictIterPos);      
+	  memcpy(pos,p2,sizeof(WcDictIterPos));
+	  result->tab[i].pos=pos;
+	}
+    }
+}
+
+
 static int 
 element_cmp(WcWordcutTableElement *a,
 	    WcWordcutTableElement *b)
@@ -161,19 +172,17 @@ set_element(WcWordcutTableElement* tab,WcWordcutTableElement* target,
 }
 
 
-#ifdef DEBUG2
 static void
 dump_element(WcWordcutTableElement *tab)
 {
   printf ("start=%d break=%d unk=%d wordunit=%d dict=%d\n",
 	  tab->start,tab->brk_c,tab->unk_ch_c,tab->wu_c,tab->dict_c);
 }
-#endif
 
 
 static void 
 select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
-	    char ch,WcWordcutTableElement* tab,int n)
+	    char ch,WcWordcutTableElement* tab,int n,wc_boolean debug)
 {
   WcWordcutTableElement selected,canidate;
   wc_boolean first=WC_TRUE;
@@ -192,12 +201,15 @@ select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
 	  selected.pos=NULL;
 	  selected.type=WC_WORD_TYPE_WORDUNIT;
 	  selected.start=start;
-#ifdef DEBUG2
-	  printf ("Select\tCanidate\n");
-	  dump_element(&selected);
-	  dump_element(&canidate);
-	  printf ("%s: n=%d\tType = %c\n",__FILE__,n,selected.type);
-#endif
+	  
+	  if (debug) 
+	    {
+	      /* debug select path */
+	      printf ("Select\tCanidate\n");
+	      dump_element(&selected);
+	      dump_element(&canidate);
+	      printf ("%s: n=%d\tType = %c\n",__FILE__,n,selected.type);
+	    }
 	}
     }
   
@@ -217,16 +229,16 @@ select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
 	  selected.type=WC_WORD_TYPE_DICT;
  	  selected.pos=wc_dict_map_assoc_pos_at(dict_map,n,i);
 
-	  /* test */
-#ifdef DEBUG2
-	  printf ("Select\tCanidate\n");
-	  dump_element(&selected);
-	  dump_element(&canidate);
-	  printf ("%s: n=%d\tType=%c\tPos len = %d\n",
-		  __FILE__,n,selected.type,selected.pos->len);
+	  if(debug)
+	    {
+	      printf ("Select\tCanidate\n");
+	      dump_element(&selected);
+	      dump_element(&canidate);
+	      printf ("%s: n=%d\tType=%c\tPos len = %d\n",
+		      __FILE__,n,selected.type,selected.pos->len);
+	    }
 
-#endif
-	  assert(selected.pos!=NULL);
+	  //assert(selected.pos!=NULL);
 	  selected.start=start;
 	}
     }
@@ -240,19 +252,21 @@ select_path(WcDictMap *dict_map,WcWordunitMap *wu_map,
       selected.type=WC_WORD_TYPE_UNK;
       selected.pos=NULL;
       selected.start=n;
-#ifdef DEBUG2
-      printf ("Select\tCanidate\n");
-      dump_element(&selected);
-      dump_element(&canidate);
-      printf ("%s: n=%d\tType = %c\n",__FILE__,n,selected.type);
-#endif
+
+      if(debug)
+	{
+	  printf ("Select\tCanidate\n");
+	  dump_element(&selected);
+	  dump_element(&canidate);
+	  printf ("%s: n=%d\tType = %c\n",__FILE__,n,selected.type);
+	}
     }
   tab[n]=selected;
-#ifdef DEBUG2
-  printf ("N=%d\tTab[n] type=%c ",n,tab[n].type);
-  dump_element(&tab[n]);
-#endif
-
+  if(debug)
+    {
+      printf ("N=%d\tTab[n] type=%c ",n,tab[n].type);
+      dump_element(&tab[n]);
+    }
 }
 
 
@@ -388,6 +402,72 @@ wc_wordcut_result_str(WcWordcutResult* self , char *out , size_t out_size   ,
   *out='\0';
   return l;
 }
+int
+wc_wordcut_result_str_tag(WcWordcutResult* self , char *out , size_t out_size   ,
+		      const char *delimiter,size_t del_len)
+{
+  int i,k,j,l=0;
+  const char *pch;
+  wc_boolean first=WC_TRUE;
+  const WcDictIterPos *pos;
+  wc_byte id;
+  const char *posstr;
+
+  if (self->n*del_len+1>=out_size || self->n<=0)
+    return -1;
+  for(i=self->n-1;i>=0;i--)
+    {
+      if(!first)
+	{
+	  for(j=0;j<del_len;j++)
+	    {
+	      *out++ = delimiter[j];
+	      l++;
+	    }
+	}
+      else
+	{
+	  first=WC_FALSE;
+	}
+#ifdef DEBUG
+      printf("Stop=%d\n",self->index[i]);
+      printf ("Start=%d\n",self->tab[self->index[i]].start);
+#endif      
+      for(j= self->tab[self->index[i]].start ; j<=self->index[i] ; j++)	    
+	{
+	  *out++ = self->str[j];
+	  l++;
+	}
+      
+      pos=wc_wordcut_result_pos_at(self,i);
+      if (pos!=NULL)
+	{
+	  for(k=0;k<pos->len;k++)
+	    {
+	      size_t pos_len=strlen(posstr);
+	      wc_dict_iter_pos_posid(pos,k,&id);
+	      posstr=wc_dict_iter_pos_posid2str(pos,id);
+	      if (l+pos_len+2>=out_size) return -1;
+	      *out++='<';
+	      for(pch=posstr;*pch!='\0';pch++)
+		{
+		  *out++ = *pch;
+		}	
+	      *out++='>';
+	      l=l+2+pos_len;
+	    }
+	}
+    }
+  *out='\0';
+  return l;
+}
+
+
+void 
+wc_wordcut_set_debug_select_path(WcWordcut* self)
+{
+  self->debug_select_path=WC_TRUE;
+}
 
 void
 wc_wordcut_cut(WcWordcut *self,const char* str,int len,WcWordcutResult *result)
@@ -403,7 +483,7 @@ wc_wordcut_cut(WcWordcut *self,const char* str,int len,WcWordcutResult *result)
 
   for(i=0;i<len;i++)
     {
-      select_path(&dict_map,&wu_map,str[i],result->tab,i);
+      select_path(&dict_map,&wu_map,str[i],result->tab,i,self->debug_select_path);
     }
 
   result->len=len;
@@ -429,6 +509,7 @@ wc_wordcut_cut(WcWordcut *self,const char* str,int len,WcWordcutResult *result)
     }
   result->n=c;
   join_unk(result); 
+  dup_pos(result);
   wc_dict_map_destroy(&dict_map);
   wc_wordunit_map_destroy(&wu_map);
 }      
@@ -436,6 +517,17 @@ wc_wordcut_cut(WcWordcut *self,const char* str,int len,WcWordcutResult *result)
 void
 wc_wordcut_result_destroy(WcWordcutResult *self)
 {
+  int i,start;
+  const WcDictIterPos *p2;
+  for(i=self->len-1;i>=0;i=start-1)
+    {
+      start=self->tab[i].start;
+      if ((p2=self->tab[i].pos)!=NULL)
+	{
+	  free((WcDictIterPos*)p2);
+	}
+    }
+  
   free(self->tab);
   free(self->str);
   free(self->index);
@@ -455,6 +547,7 @@ wc_wordcut_new_with_dict(WcDict *dict)
 void 
 wc_wordcut_init_with_dict(WcWordcut *self,WcDict *dict)
 {
+  self->debug_select_path=WC_FALSE;
   self->dict=dict;
   self->ext_dict=WC_TRUE;
 }
@@ -464,6 +557,7 @@ void
 wc_wordcut_init(WcWordcut *self,WC_STATUS *error)
 {
   self->ext_dict=WC_FALSE;
+  self->debug_select_path=WC_FALSE;
   self->dict=wc_dict_new();
   if (wc_dict_load(self->dict,WC_SHARE_DATA_PATH "dict.etd")==WC_RET_NORMAL)
     *error=WC_RET_NORMAL;
@@ -477,6 +571,7 @@ wc_wordcut_init_with_dictfile(WcWordcut *self,const char *dict_filename,WC_STATU
 {
   self->ext_dict=WC_FALSE;
   self->dict=wc_dict_new();
+  self->debug_select_path=WC_FALSE;
   if (wc_dict_load(self->dict,dict_filename)==WC_RET_NORMAL)
     *error=WC_RET_NORMAL;
   else
@@ -555,6 +650,31 @@ thai_callback(const char *str,size_t len,void *data)
   wc_wordcut_result_destroy(&result);
 }
 
+
+static void 
+thai_callback_tag(const char *str,size_t len,void *data)
+{
+  int l;
+  CallbackData *cb_data=(CallbackData *)data;
+  WcWordcutResult result;
+  if (cb_data->status==WC_RET_ERROR) return;
+  wc_wordcut_cut(cb_data->wordcut,str , len , &result);
+#ifdef DEBUG
+  dump_result(&result);
+#endif 
+  l=wc_wordcut_result_str_tag(&result,cb_data->out,cb_data->size,
+			  cb_data->delimiter,cb_data->del_len);
+  if(l==-1) 
+    {
+      cb_data->status=WC_RET_ERROR;
+      return;
+    }
+  cb_data->out=cb_data->out+l;
+  cb_data->size -= l;
+  wc_wordcut_result_destroy(&result);
+}
+
+
 static void
 default_callback(const char *str,size_t len,void *data)
 {
@@ -591,6 +711,26 @@ wc_wordcut_cutline(WcWordcut *self,const char* str,
   *data.out='\0';
   return data.status;
 }
+
+
+WC_STATUS
+wc_wordcut_cutline_tag(WcWordcut *self,const char* str,
+		   char *out,size_t out_size,
+		   const char *delimiter,
+		   size_t del_len)
+{
+  CallbackData data;
+  data.size=out_size;
+  data.out=out;
+  data.delimiter=delimiter;
+  data.del_len=del_len;
+  data.status=WC_RET_NORMAL;
+  data.wordcut=self;
+  wc_split(str,thai_callback_tag,&data,default_callback,&data);
+  *data.out='\0';
+  return data.status;
+}
+
 
 int 
 wc_wordcut_result_len(WcWordcutResult *result)

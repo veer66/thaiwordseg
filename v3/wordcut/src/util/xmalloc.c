@@ -56,12 +56,6 @@ static VOID *fixup_null_alloc (size_t n);
    The caller may set it to some other value.  */
 int xmalloc_exit_failure = EXIT_FAILURE;
 
-#if __STDC__ && (HAVE_VPRINTF || HAVE_DOPRNT)
-void error (int, int, const char *, ...);
-#else
-void error ();
-#endif
-
 static VOID *
 fixup_null_alloc (n)
      size_t n;
@@ -72,14 +66,14 @@ fixup_null_alloc (n)
   if (n == 0)
     p = malloc ((size_t) 1);
   if (p == 0)
-    error (xmalloc_exit_failure, 0, _("Memory exhausted"));
+    WC_HALT("Out of memory.");
   return p;
 }
 
 /* Allocate N bytes of memory dynamically, with error checking.  */
 
 VOID *
-xmalloc (n)
+wc_xmalloc (n)
      size_t n;
 {
   VOID *p;
@@ -93,7 +87,7 @@ xmalloc (n)
 /* Allocate memory for N elements of S bytes, with error checking.  */
 
 VOID *
-xcalloc (n, s)
+wc_xcalloc (n, s)
      size_t n, s;
 {
   VOID *p;
@@ -109,12 +103,12 @@ xcalloc (n, s)
    If P is NULL, run xmalloc.  */
 
 VOID *
-xrealloc (p, n)
+wc_xrealloc (p, n)
      VOID *p;
      size_t n;
 {
   if (p == 0)
-    return xmalloc (n);
+    return wc_xmalloc (n);
   p = realloc (p, n);
   if (p == 0)
     p = fixup_null_alloc (n);
@@ -124,12 +118,11 @@ xrealloc (p, n)
 /* Make a copy of a string in a newly allocated block of memory. */
 
 char *
-xstrdup (str)
-     char *str;
+wc_xstrdup (char *str)
 {
   VOID *p;
 
-  p = xmalloc (strlen (str) + 1);
+  p = wc_xmalloc (strlen (str) + 1);
   strcpy (p, str);
   return p;
 }
