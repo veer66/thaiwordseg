@@ -38,6 +38,7 @@
 #include<assert.h>
 #include<fcntl.h>
 #include<unistd.h>
+#include<sys/stat.h>
 
 
 #define TAB_SIZE 0x100
@@ -108,14 +109,16 @@ void trie_add(const char *str) {
     node->complete=1;
 }
 
-void load_dict(const char* filename) {
+void 
+load_dict(const char* filename) 
+{
+#define MAX_BUF 0x400
     FILE *fp;
+    char buffer[MAX_BUF];
     if((fp=fopen(filename,"r"))==NULL) {
         fprintf (stderr,"%s:%d: Could not open dictionary.\n",__FILE__,__LINE__);
         exit(1);
     }
-#define MAX_BUF 0x400
-    char buffer[MAX_BUF];
     while(fgets(buffer,MAX_BUF,fp)!=NULL) {
         char *tok_buffer;
         tok_buffer=strtok(buffer,"\n\r\t ");
@@ -128,7 +131,9 @@ void load_dict(const char* filename) {
 
 char dump_buffer[1024];
 
-void dump_(TrieNode *node,int c) {
+void 
+dump_(TrieNode *node,int c) 
+{
     if (node==NULL) return;
 
     if (node->complete) { 
