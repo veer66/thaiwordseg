@@ -17,10 +17,10 @@ static VALUE mLatexParser;
 #define LP_OTHER              11
 
 
-static gpointer 
-callback(gchar *txt,gpointer data)
+static void*
+callback(char *txt,void* data)
 {
-  gint type=(gint)data;
+  int type=(int)data;
   rb_yield(rb_assoc_new(rb_str_new2(txt),INT2FIX(type)));  
 }
 
@@ -32,17 +32,17 @@ f_latex_parse(int argc,VALUE *argv,VALUE obj)
     {
       lxpa_input(RSTRING(argv[0])->ptr);
     }
-  lxpa_set_callback(callback,(gpointer)LP_SYMBOL,
-		    callback,(gpointer)LP_COMMENT,            
-		    callback,(gpointer)LP_ENV_BEGIN,          
-		    callback,(gpointer)LP_ENV_END,            
-		    callback,(gpointer)LP_TAG,                
-		    callback,(gpointer)LP_TAG2,               
-		    callback,(gpointer)LP_BLOCK_BEGIN,        
-		    callback,(gpointer)LP_BLOCK_END,          
-		    callback,(gpointer)LP_CONTENT,            
-		    callback,(gpointer)LP_NEWLINE,            
-		    callback,(gpointer)LP_OTHER);	    
+  lxpa_set_callback(callback,(void *)LP_SYMBOL,
+		    callback,(void *)LP_COMMENT,            
+		    callback,(void *)LP_ENV_BEGIN,          
+		    callback,(void *)LP_ENV_END,            
+		    callback,(void *)LP_TAG,                
+		    callback,(void *)LP_TAG2,               
+		    callback,(void *)LP_BLOCK_BEGIN,        
+		    callback,(void *)LP_BLOCK_END,          
+		    callback,(void *)LP_CONTENT,            
+		    callback,(void *)LP_NEWLINE,            
+		    callback,(void *)LP_OTHER);	    
   lxpa_parse();
   lxpa_destroy();
 }
