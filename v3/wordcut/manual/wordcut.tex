@@ -1,7 +1,257 @@
 \documentclass{book}
-
+\usepackage[english,thai]{babel}
+\usepackage{makeidx}
+\author{วีร์  สัตยมาศ}
+\title{โปรแกรม{\wbr}ตัด{\wbr}คำ}
+\makeindex
 \begin{document}
-\tableofcontents
-\chapter{C API Reference}
+\thai{
+\maketitle
+\chapter*{คำนำ}
 
+\tableofcontents
+%%%% Introduction
+\chapter{บทนำ}
+
+%%%% Intallation
+\chapter{การ{\wbr}ติดตั้ง}
+\section{การ{\wbr}ติดตั้ง{\wbr}จาก{\wbr}รหัส{\wbr}ต้นฉบับ}
+\section{การ{\wbr}ติดตั้ง{\wbr}โดย{\wbr}ใช้{\wbr}ห่อ{\wbr}แบบ{\wbr}อา{\wbr}พี{\wbr}เอ็ม}
+
+%%%% Using
+\chapter{การ{\wbr}ใช้{\wbr}งาน{\wbr}โปรแกรม{\wbr}ตัด{\wbr}คำ}
+\section{การ{\wbr}สร้าง{\wbr}โปรแกรม{\wbr}ประยุกต์{\wbr}โดย{\wbr}เอ{\wbr}พี{\wbr}ไอ{\wbr}สำหรับ{\wbr}ภาษาซี}
+\begin{itemize}
+\item{ตัวอย่าง{\wbr}การ{\wbr}สั่ง{\wbr}แปล{\wbr}โปรแกรม}
+\index{การ{\wbr}แปล{\wbr}โปรแกรม}
+\begin{verbatim}
+gcc `pkg-config --cflags --libs wordcut` test.c
+\end{verbatim}
+\end{itemize}
+
+%%%% C API
+\chapter{ส่วนต่อ{\wbr}ประสาน{\wbr}โปรแกรม{\wbr}ประยุกต์{\wbr}ภาษาซี}
+\section{โครงสร้างพื้นฐาน}
+\subsection{แบบ{\wbr}ชนิด}
+\index{แบบ{\wbr}ชนิด{\wbr}พื้นฐาน}
+\begin{itemize}
+\item{แบบ{\wbr}ชนิด wc\_uint32 เป็น{\wbr}แบบ{\wbr}ชนิด{\wbr}จำนวนเต็ม{\wbr}แบบ{\wbr}ไม่{\wbr}มี{\wbr}เครื่องหมาย{\wbr}ขนาด 32 บิ{\wbr}ท}
+\index{wc\_uint32}
+
+\item{แบบ{\wbr}ชนิด wc\_uchar เป็น{\wbr}แบบ{\wbr}ชนิด{\wbr}จำนวนเต็ม{\wbr}ไม่{\wbr}มี{\wbr}เครื่องหมาย{\wbr}ขนาด 8 บิ{\wbr}ท}
+\index{wc\_uchar}
+
+\item{แบบ{\wbr}ชนิด wc\_byte เป็น{\wbr}แบบ{\wbr}ชนิด{\wbr}จำนวนเต็ม{\wbr}ไม่{\wbr}มี{\wbr}เครื่องหมาย{\wbr}ขนาด 8 บิ{\wbr}ท}
+\index{wc\_wcbyte}
+
+\item{แบบ{\wbr}ชนิด wc\_boolean เป็น{\wbr}แบบ{\wbr}ชนิด{\wbr}บูลีน (จริง/เท็จ)}
+\index{wc\_boolean}
+
+\item{ค่าคงที่ WC\_FALSE เป็น{\wbr}ค่าคงที่{\wbr}แทน{\wbr}ค่า{\wbr}เท็จ}
+\index{WC\_FALSE}
+
+\item{ค่าคงที่ WC\_TRUE เป็น{\wbr}ค่าคงที่{\wbr}แทน{\wbr}ค่า{\wbr}จริง}
+\index{WC\_TRUE}
+\end{itemize}
+
+\subsection{การ{\wbr}จัดการ{\wbr}หน่วยความจำ}
+\index{การ{\wbr}จัดการ{\wbr}หน่วยความจำ}
+\begin{itemize}
+\item{แม{\wbr}โค{\wbr}ร MEMCHK(mem) ใช้{\wbr}ทำ{\wbr}การ{\wbr}ตรวจสอบ{\wbr}ค่า mem ว่า{\wbr}เท่า{\wbr}กับ NULL หรือ{\wbr}ไม่ ถ้า{\wbr}ใช้{\wbr}แม{\wbr}โค{\wbr}ร{\wbr}จะ{\wbr}ทำ{\wbr}การ{\wbr}รายงาน{\wbr}ความผิด{\wbr}ผลา{\wbr}ด{\wbr}และ{\wbr}ออก{\wbr}จาก{\wbr}การ{\wbr}ทำงาน{\wbr}ของ{\wbr}โปรแกรม{\wbr}และ{\wbr}คือ{\wbr}ค่า 1}
+\index{MEMCHK}
+\item{แม{\wbr}โค{\wbr}ร WC\_NEW\_N(type,size) ใช้{\wbr}ใน{\wbr}การ{\wbr}จัดสรร{\wbr}หน่วยความจำ{\wbr}แบบ{\wbr}ชนิด{\wbr}เดียวกับ type และ{\wbr}มี{\wbr}ขนาด{\wbr}เท่า{\wbr}กับ{\wbr}ผลคูณ{\wbr}ของ{\wbr}ขนาด{\wbr}ของ type และ size}
+\index{แม{\wbr}โค{\wbr}ร WC\_NEW\_N}
+\item{แม{\wbr}โค{\wbr}ร WC\_NEW(type) ใช้{\wbr}ใน{\wbr}การ{\wbr}จัดสรร{\wbr}หน่วยความจำ{\wbr}แบบ{\wbr}ชนิด{\wbr}เดียวกับ type และ{\wbr}มี{\wbr}ขนาด{\wbr}เท่า{\wbr}กับ{\wbr}ผลคูณ{\wbr}ของ{\wbr}ขนาด{\wbr}ของ type}
+\index{WC\_NEW} 
+\item{แม{\wbr}โค{\wbr}ร WC\_RENEW (type,data,size) ใช้{\wbr}ใน{\wbr}การ{\wbr}จัดสรร{\wbr}หน่วยความจำ{\wbr}แบบ{\wbr}ชนิด{\wbr}เดียวกับ type และ{\wbr}มี{\wbr}ขนาด{\wbr}เท่า{\wbr}กับ{\wbr}ผลคูณ{\wbr}ของ{\wbr}ขนาด{\wbr}ของ type และ size แต่{\wbr}สำเนา{\wbr}เข้า{\wbr}มูล{\wbr}ใน data ใน{\wbr}ลง{\wbr}หน่วยความจำ{\wbr}ที่{\wbr}จัดสรร{\wbr}ให้{\wbr}ใหม่{\wbr}ด้วย{\wbr}จัดสรร}
+\index{WC\_RENEW} 
+
+\item{แม{\wbr}โค{\wbr}ร WC\_NEW\_STR(len) ใช้{\wbr}ใน{\wbr}การ{\wbr}จัดสรร{\wbr}หน่วยความจำ{\wbr}สำหรับ{\wbr}สาย{\wbr}อักขระ{\wbr}ความ{\wbr}ยาว{\wbr}เท่า{\wbr}กับ len แต่{\wbr}ใน{\wbr}ที่นี้{\wbr}จะ{\wbr}จัดสรร{\wbr}หน่วยความจำ{\wbr}มาก{\wbr}กว่า{\wbr}ขนาด{\wbr}ของ{\wbr}ตัวอักษร{\wbr}คูณ{\wbr}กับ len+1 เพราะ{\wbr}ใน{\wbr}ภาษาซี{\wbr}จำเป็น{\wbr}ต้อง{\wbr}เหลือ{\wbr}ที่{\wbr}สำหรับ{\wbr}ใส่{\wbr}อัก{\wbr}ระ{\wbr}ปิด{\wbr}ท้าย}
+\index{WC\_NEW\_STR} 
+\item{แม{\wbr}โค{\wbr}ร WC\_STR\_DUP(target,src) ใช้{\wbr}ใน{\wbr}การ{\wbr}ทำ{\wbr}สำเนา{\wbr}สาย{\wbr}อักขระ{\wbr}พร้อมทั้ง{\wbr}จัดสรร{\wbr}หน่วย{\wbr}ความ{\wbr}คำ{\wbr}ให้{\wbr}สาย{\wbr}อักขระ{\wbr}ปลาย{\wbr}ทาง}
+\index{WC\_STR\_DUP} 
+
+\end{itemize}
+
+\subsection{การ{\wbr}จัด{\wbr}กระทำ{\wbr}ความผิด{\wbr}พลาด}
+\index{ความผิด{\wbr}พลาด}
+\index{การ{\wbr}จัด{\wbr}กระทำ{\wbr}ความผิด{\wbr}พลาด}
+
+\begin{itemize}
+\item{ค่าคงที่ WC\_ERR\_FILE ใช้{\wbr}แทน{\wbr}ค่า{\wbr}ของ{\wbr}ตัว{\wbr}ชี้{\wbr}ไฟล์{\wbr}สำหรับ{\wbr}ราย{\wbr}งา{\wbr}ย{\wbr}ความผิด{\wbr}พลาด ค่า{\wbr}โดย{\wbr}ปริยาย{\wbr}คือ stderr}
+\index{stderr}
+\index{WC\_ERR\_FILE}
+\item{แม{\wbr}โค{\wbr}ร WC\_HALT(msg) ใช้{\wbr}เพื่อ{\wbr}รายงาน{\wbr}ความผิด{\wbr}พลาด{\wbr}โดย{\wbr}ใช้{\wbr}ข้อความ{\wbr}ใน msg  ออก{\wbr}จาก{\wbr}โปรแกรม{\wbr}และ{\wbr}คืน{\wbr}ค่า 1}
+\index{WC\_HALT}
+\item{ค่าคงที่ WC\_RET\_NORMAL มี{\wbr}ค่า{\wbr}เท่า 0 ใช้{\wbr}ใน{\wbr}การ{\wbr}คืน{\wbr}ค่า{\wbr}สถานะ{\wbr}ปกติ ใช้{\wbr}รวบ{\wbr}กับ{\wbr}แบบ{\wbr}ชนิด WC\_STATUS}
+\index{WC\_RET\_NORMAL}
+\item{ค่าคงที่ WC\_RET\_ERROR มี{\wbr}ค่า{\wbr}เท่า -1 ใช้{\wbr}ใน{\wbr}การ{\wbr}คืน{\wbr}ค่า{\wbr}สถานะ{\wbr}ที่{\wbr}มี{\wbr}ความผิด{\wbr}ผลา{\wbr}ด{\wbr}ใช้{\wbr}รวบ{\wbr}กับ{\wbr}แบบ{\wbr}ชนิด WC\_STATUS}
+\index{WC\_RET\_ERROR}
+\item{แม{\wbr}โค{\wbr}ร WC\_RET\_CHECK(cond) ใช้{\wbr}คืน{\wbr}ค่า WC\_RET\_ERROR เมื่อ cond เป็นจริง}
+\index{WC\_RET\_CHECK}
+\item{แบบ{\wbr}ชนิด WC\_STATUS ใช้{\wbr}แทน{\wbr}สถานะ{\wbr}ของ{\wbr}ผล{\wbr}การ{\wbr}ทำงาน{\wbr}ว่า{\wbr}ปกติ{\wbr}หรือ{\wbr}มี{\wbr}ข้อผิดพลาด}
+\index{WC\_STATUS}
+
+
+\end{itemize}
+
+
+\section{พจนานุกรม}\index{พจนานุกรม}
+\subsection{ค{\wbr}ลา{\wbr}ส WcDict}
+\index{WcDict}
+\index{ค{\wbr}ลา{\wbr}ส!WcDict}
+\begin{itemize}
+\item{โครงสร้าง{\wbr}ของ WcDict}
+\index{โครงสร้าง!WcDict}
+\begin{verbatim} 
+typedef struct {
+  char **pos;
+  wc_uint32 pos_size,root,size;
+  wc_uchar *tab;
+} WcDict;
+\end{verbatim}
+
+
+\item{การ{\wbr}สร้าง{\wbr}วัตถุWcDict}
+
+\index{การ{\wbr}สร้าง!WcDict}
+\index{wc\_dict\_init}
+\index{wc\_dict\_new}
+\begin{verbatim}
+WcDict* wc_dict_new();
+void wc_dict_init(WcDict *self);
+\end{verbatim}
+
+\item{การ{\wbr}ทำลาย{\wbr}วัตถุ WcDict}
+\index{การ{\wbr}ทำลาย{\wbr}วัตถุ!WcDict}
+\index{wc\_dict\_destory}
+\index{wc\_dict\_delete}
+\begin{verbatim}
+void wc_dict_destroy(WcDict* self);
+void wc_dict_delete(WcDict* self);
+\end{verbatim}
+
+\item{การ{\wbr}บรรจุ{\wbr}พจนานุกรม{\wbr}เข้า{\wbr}สู่{\wbr}หน่วยความจำ}
+\index{การ{\wbr}บรรจุ{\wbr}พจนานุกรม{\wbr}เข้า{\wbr}สู่{\wbr}หน่วยความจำ}
+\index{wc\_dict\_load}
+\begin{verbatim}
+WC_STATUS wc_dict_load(WcDict *self,const char *filename);
+\end{verbatim}
+
+\item{การ{\wbr}นำ{\wbr}ตัว{\wbr}เลื่อน{\wbr}มา{\wbr}จาก{\wbr}พจนานุกรม}
+\index{การ{\wbr}นำ{\wbr}ตัว{\wbr}เลื่อน{\wbr}มา{\wbr}จาก{\wbr}พจนานุกรม}
+\index{ราก}
+\index{wc\_dict\_root}
+\begin{verbatim}
+WC_STATUS wc_dict_load(WcDict *self,const char *filename);
+\end{verbatim}
+\item{Using example.}
+\index{ตัวอย่าง!WcDict}
+\begin{verbatim}
+/* การประกาศการรวมส่วนหัว */
+#include<wordcut/wcdict.h>
+
+int 
+main()
+{
+  /* การประกาศแบบชนิดของตัวแปร */
+  WcDict *dict;
+  WcDictIter iter;
+
+  /* การสร้างวัตถุ WcDict */
+  dict=wc_dict_new();
+
+  /* การบรรจุพจนานุกรมเข้าสู่หน่วยความจำ */
+  wc_dict_load(dict,"../data/dict.etd");
+
+  /*  การนำตัวเลื่อนมาจากพจนานุกรม */
+  wc_dict_root(dict,&iter);
+
+  /* การทำลายวัตถุ WcDict */
+  wc_dict_delete(dict);
+  return 0;
+}
+\end{verbatim}
+\end{itemize}
+
+\subsection{ค{\wbr}ลา{\wbr}ส WcDictIter}
+\index{WcDictIter}
+\index{ค{\wbr}ลา{\wbr}ส!WcDictIter}
+วัตถุ WcDictIter ทำ{\wbr}หน้าที่{\wbr}เลื่อน{\wbr}ไป{\wbr}บน{\wbr}ตำแหน่ง{\wbr}ต่าง{\wbr}บน{\wbr}พจนานุกรม (WcDict)
+\begin{itemize}
+\item{โครงสร้าง{\wbr}ของ WcDictIter}
+\index{โครงสร้าง!WcDictIter}
+\begin{verbatim}
+typedef struct wc_dict_iter_t {
+  WcDict* dict;  /* ตัวชี้ไปยังพจนานุกรม */
+  wc_uint32 p,i; 
+  int i_state; 
+  wc_boolean terminator; 
+  WcDictIterStatus status;
+#ifdef WC_ITER_EXTRA_INFO
+  WcNodeType type;
+#endif
+} WcDictIter;
+\end{verbatim}
+\item{ค่าคงที่{\wbr}ของ{\wbr}ค{\wbr}ลา{\wbr}ส WcDictIter}
+\index{ค่าคงที่!WcDictIter}
+\begin{itemize}
+\item{ค่าคงที่{\wbr}สำหรับ{\wbr}แสดง{\wbr}สถาน{\wbr}ของ{\wbr}ตัว{\wbr}เลื่อน}   
+\index{ค่าคงที่!สำหรับ{\wbr}แสดง{\wbr}สถาน{\wbr}ของ{\wbr}ตัว{\wbr}เลื่อน}   
+\begin{itemize}
+\index{WC\_DICT\_ITER\_ACTIVE}
+\item{ค่าคงที่ WC\_DICT\_ITER\_ACTIVE ใช้{\wbr}แสดง{\wbr}สถานะ{\wbr}ว่า{\wbr}ตัว{\wbr}เลื่อน{\wbr}ยัง{\wbr}อยู่{\wbr}ใน{\wbr}ปม{\wbr}ของ{\wbr}ทรัย{\wbr}มี{\wbr}ค่า{\wbr}เท่า{\wbr}กับ 0}
+\index{WC\_DICT\_ITER\_DEAD}
+\item{ค่าคงที่ WC\_DICT\_ITER\_DEAD ใช้{\wbr}แสดง{\wbr}สถานะ{\wbr}ว่า{\wbr}ตัว{\wbr}เลื่อน{\wbr}ไม่{\wbr}อยู่{\wbr}ใน{\wbr}ปม{\wbr}ของ{\wbr}ทรัย{\wbr}แล้ว{\wbr}มี{\wbr}ค่า{\wbr}เท่า{\wbr}กับ    1}
+\end{itemize}
+\index{ค่าคงที่!สำหรับ{\wbr}แสดง{\wbr}สถานะ{\wbr}การ{\wbr}ใช้{\wbr}งาน{\wbr}ของ{\wbr}ตัว{\wbr}ชี้{\wbr}ใน{\wbr}กรณี{\wbr}ที่{\wbr}มี{\wbr}การ{\wbr}บีบ{\wbr}อัด{\wbr}อุปสรรค}
+\item{ค่าคงที่{\wbr}สำหรับ{\wbr}แสดง{\wbr}สถานะ{\wbr}การ{\wbr}ใช้{\wbr}งาน{\wbr}ของ{\wbr}ตัว{\wbr}ชี้{\wbr}ใน{\wbr}กรณี{\wbr}ที่{\wbr}มี{\wbr}การ{\wbr}บีบ{\wbr}อัด{\wbr}อุปสรรค} 
+\begin{itemize}
+\index{WC\_DICT\_ITER\_I\_RESET}
+\item{ค่าคงที่ WC\_DICT\_ITER\_I\_RESET มี{\wbr}ค่า{\wbr}เท่า 0 แสดง{\wbr}การ{\wbr}เริ่มต้น{\wbr}ใหม่}
+\index{WC\_DICT\_ITER\_I\_INUSE}
+\item{ค่าคงที่ WC\_DICT\_ITER\_I\_INUSE  1 มี{\wbr}ค่า{\wbr}เท่า{\wbr}กับ 1 แสดง{\wbr}การ{\wbr}ใช้{\wbr}งาน}
+\end{itemize}
+
+\index{ค่าคงที่!สำหรับ{\wbr}แสดง{\wbr}แบบ{\wbr}ชนิด{\wbr}ของ{\wbr}ข้อมูล{\wbr}ใน{\wbr}พจนานุกรม{\wbr}ที่{\wbr}ตำแหน่ง{\wbr}ที่{\wbr}ตำ{\wbr}เลื่อน{\wbr}อยู่}
+\item{ค่า{\wbr}คง!ที่{\wbr}สำหรับ{\wbr}แสดง{\wbr}แบบ{\wbr}ชนิด{\wbr}ของ{\wbr}ข้อมูล{\wbr}ใน{\wbr}พจนานุกรม{\wbr}ที่{\wbr}ตำแหน่ง{\wbr}ที่{\wbr}ตำ{\wbr}เลื่อน{\wbr}อยู่}
+\begin{itemize}
+\index{WC\_NODE\_TYPE\_SEQ}
+\item{ค่าคงที่ WC\_NODE\_TYPE\_SEQ มี{\wbr}ค่า{\wbr}เท่า{\wbr}กับ 0 แทน{\wbr}แบบ{\wbr}ชนิด{\wbr}ที่{\wbr}มี{\wbr}การ{\wbr}บีบ{\wbr}อัด{\wbr}อุปสรรค}
+\index{WC\_NODE\_TYPE\_BIN}
+\item{ค่าคงที่ WC\_NODE\_TYPE\_BIN มี{\wbr}ค่า{\wbr}เท่า{\wbr}กับ 1 แทน{\wbr}แบบ{\wbr}ชนิด{\wbr}การ{\wbr}เก็บ{\wbr}ข้อมูล{\wbr}ใน{\wbr}ท{\wbr}รับ{\wbr}ปกติ{\wbr}มี{\wbr}การ{\wbr}ค้นหา{\wbr}แบบ{\wbr}ทวิภาค}
+\index{WC\_NODE\_TYPE\_POS}
+\item{ค่าคงที่ WC\_NODE\_TYPE\_POS มี{\wbr}ค่า{\wbr}เท่า{\wbr}กับ 2  แทน{\wbr}แบบ{\wbr}ชนิด{\wbr}การ{\wbr}เก็บ{\wbr}ข้อมูล{\wbr}ที่{\wbr}เป็น{\wbr}ชนิด{\wbr}ของ{\wbr}คำ}
+\index{WC\_NODE\_TYPE\_START}
+\item{ค่าคงที่ WC\_NODE\_TYPE\_START มี{\wbr}ค่า{\wbr}เท่า{\wbr}กับ 3  แทน{\wbr}แบบ{\wbr}ชนิด{\wbr}จุดเริ่มต้น}
+\end{itemize}
+\end{itemize}
+
+\item{แบบ{\wbr}ชนิด{\wbr}ของ{\wbr}ค{\wbr}ลา{\wbr}ส WcDictIter}
+\index{แบบ{\wbr}ชนิด!WcDictIter}
+\begin{itemize}
+\index{WcDictIterStatus}
+\item{แบบ{\wbr}ชนิด WcDictIterStatus ตรง{\wbr}กับ{\wbr}แบบ{\wbr}ชนิด{\wbr}จำนวนเต็ม{\wbr}ใช้{\wbr}ร่วม{\wbr}กับ{\wbr}ค่าคงที่ WC\_DICT\_ITER\_ACTIVE และ WC\_DICT\_ITER\_DEAD}
+\index{WcNodeType}
+\item{แบบ{\wbr}ชนิด WcNodeType ตรง{\wbr}กับ{\wbr}แบบ{\wbr}ชนิด{\wbr}จำนวนเต็ม{\wbr}ใช้{\wbr}ร่วม{\wbr}กับ{\wbr}ค่าคงที่ WC\_NODE\_TYPE\_SEQ WC\_NODE\_TYPE\_BIN WC\_NODE\_TYPE\_POS และ WC\_NODE\_TYPE\_START}
+\end{itemize}
+ 
+
+\item{Getting WcDictIter from WcDict.}
+\index{constructing!WcDictIter} \\
+WcDictIter has no isolate constructor but it could be
+created from object of WcDict via using function
+wc\_dict\_root.
+\begin{verbatim}
+void wc_dict_root(WcDict *self,WcDictIter* iter);
+\end{verbatim}
+
+\item{Iterating on WcDictIter object}
+\index{iterating!WcDictIter}
+\begin{verbatim}
+WC_STATUS wc_dict_iter_transit(WcDictIter *self,char ch);
+\end{verbatim}
+\end{itemize}
+\printindex
+}
 \end{document}
