@@ -88,7 +88,7 @@ module TestWordcut
 	if self[i]==nil then
 
 	  self[i]=GraphNode.new
-	  self[i].set(max*i,i,nil,Word::UNKNOWN)
+	  self[i].set(max*i*2,i,nil,Word::UNKNOWN)
 
 	  if(@forest[i]!=nil) then #forest search 
 
@@ -274,6 +274,17 @@ module TestWordcut
       f.close
     end	
 
+    def cut(str)      
+      marker=0
+      tab=[]
+      @rule.each do |rul|
+	
+      end
+    end
+
+    def mark(tab,start,stop)
+      
+    end
 
     def dump_rule
       @rule.each { |rul| print "#{rul}\n" }
