@@ -17,8 +17,11 @@ callback(const char *str,size_t len,void* data)
 static VALUE
 f_wc_thai_tokenizer_tok(VALUE obj,VALUE arg)
 {
-  wc_thai_tokenizer(RSTRING(arg)->ptr,callback,(void *)THAI_TOK,
-		    callback,(void *)DEFAULT_TOK);
+  if (wc_thai_tokenizer(RSTRING(arg)->ptr,callback,(void *)THAI_TOK,
+			callback,(void *)DEFAULT_TOK)!=0)
+    {
+      rb_raise(cWcThaiTokenizerError,"%s","wc_thai_tokenizer returned error flag.");
+    }
   return obj;
 }
 
