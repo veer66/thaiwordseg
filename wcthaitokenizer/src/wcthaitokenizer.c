@@ -2,8 +2,6 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-typedef void (*wc_token_callback_t)(const char *,size_t,void*);
-
 int
 wc_thai_tokenizer(const char *source,
 	     wc_token_callback_t thai_callback,
