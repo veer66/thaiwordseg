@@ -15,7 +15,7 @@ wordcut.tex : wordcut.th.tex
 wordcut.dvi : wordcut.tex
 	latex $<
 	latex $<
-	makeindex -T  $<
+	makeindex -T  `echo $< | sed 's/\.tex$$//g'`
 	latex $<
 
 clean :

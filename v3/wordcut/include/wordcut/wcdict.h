@@ -55,7 +55,4 @@ const char* wc_dict_iter_pos_posid2str(WcDictIterPos* self,wc_byte pos_id);
 WC_STATUS wc_dict_iter_pos_posid(WcDictIterPos *self,int index,wc_byte *id);
 
 
-
-
-
 #endif

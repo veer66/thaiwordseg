@@ -1,3 +1,4 @@
+INCLUDES= -I$(top_srcdir)/include
 TESTS=test_pos test_wordunit #test_dictmap test_wordcut
 
 check_PROGRAMS=test_pos test_wordunit #test_dictmap test_wordcut
