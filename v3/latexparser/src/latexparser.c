@@ -35,15 +35,17 @@ lxpa_init()
 {
 }
 
-void
+int
 lxpa_input(const gchar* filename)
 {
   FILE *fp;
   fp=fopen(filename,"r");
-  if(fp==NULL)
+  if(fp==NULL) {
     g_error("Can't open file %s.",filename);
-  
+    return 0;
+  }
   yyin=fp;
+  return 1;
 }
 
 void 

@@ -4,7 +4,7 @@
 #include <glib.h>
 
 void lxpa_init();
-void lxpa_input(const gchar* filename);
+int lxpa_input(const gchar* filename);
 void lxpa_destroy();
 
 typedef gpointer (*lxpa_callback)(gchar *txt,gpointer data);
