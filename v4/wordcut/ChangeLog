@@ -1,3 +1,6 @@
+2006-02-24 Vee Satayamas <veetai@yahoo.com>
+	* wordcut/wordcut_dict_dump.c: Patch local variable used before set reported by Mike Fabian<mfabian@suse.de>
+
 2003-07-24 Vee Satayamas <virasj@users.sourceforge.net>
 	* initialize changelog for v4/wordcut
 

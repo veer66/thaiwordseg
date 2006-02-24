@@ -4,7 +4,7 @@
 static char dump_buffer[1000];
 
 static void dump_(uint8_t *data,int p,int c) {
-    uint8_t header=data[p],size;
+    uint8_t header=data[p],size=data[p+1];
     int i;
 
 
@@ -19,8 +19,6 @@ static void dump_(uint8_t *data,int p,int c) {
         }
         printf ("\n");
     }
-    size=data[p+1];
-
                                 
     if (size > 0) {
         if (header & 0x2) {
